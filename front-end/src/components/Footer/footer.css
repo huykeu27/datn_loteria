@@ -1,0 +1,110 @@
+.footer-container {
+  background-color: #ffeae3;
+  margin-top: 100px;
+}
+.footer-content {
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+}
+.content-left {
+  width: 35%;
+  text-align: center;
+}
+.content-left p {
+  font-size: 18px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 20px 0 15px 0;
+}
+.input-contact {
+  position: relative;
+  padding: 8px 6px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  border-radius: 5px;
+}
+.input-contact input {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 7px 100px 7px 15px;
+}
+.input-contact p {
+  cursor: pointer;
+  position: absolute;
+  margin: 0;
+  top: 30%;
+  right: 20px;
+  font-size: 16px;
+  color: #ff5b6a;
+  text-transform: inherit;
+}
+.content-right {
+  display: flex;
+  width: 60%;
+  justify-content: space-between;
+}
+.right-item {
+  width: 30%;
+}
+.right-item p {
+  text-transform: uppercase;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+.right-item ul {
+  list-style: none;
+}
+.right-item ul li {
+  padding: 6px 0;
+}
+.right-item ul li a {
+  text-decoration: none;
+  font-size: 14px;
+  color: #142f43;
+  text-transform: capitalize;
+}
+.right-item ul li a:hover {
+  color: #ff5b6a;
+}
+
+.fa-facebook {
+  font-size: 20px;
+  color: #475993;
+  margin-right: 10px;
+}
+.fa-twitter {
+  font-size: 20px;
+  color: #1da1f2;
+  margin-right: 10px;
+}
+.fa-instagram {
+  font-size: 20px;
+  margin-right: 10px;
+  background: radial-gradient(
+    circle at 30% 107%,
+    #fdf497 0%,
+    #fdf497 5%,
+    #fd5949 45%,
+    #d6249f 60%,
+    #285aeb 90%
+  );
+  -webkit-background-clip: text;
+  /* Also define standard property for compatibility */
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.bct-logo {
+  margin-top: 15px;
+}
+.copyright {
+  background: #ff9ea2;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 14px;
+}
+strong {
+  margin-right: 13px;
+}
