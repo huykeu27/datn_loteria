@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 mongoose.connect("mongodb://localhost/DATN");
 const User = require("../models/User");
 const Product = require("../models/Product");

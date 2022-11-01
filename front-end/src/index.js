@@ -4,6 +4,8 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const defaultState = {
   products: [
     {
@@ -131,12 +133,9 @@ const defaultState = {
         "https://www.lotteria.vn/media/catalog/tmp/category/BG-Menu-06_1.jpg",
     },
   ],
-  combo: [
-    {
-      
-    }
-  ]
+  combo: [{}],
 };
+
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
     case "ADD_TO_CART":
@@ -184,6 +183,17 @@ root.render(
     <Provider store={store}>
       <BrowserRouter>
         <App />
+        <ToastContainer
+          position="top-left"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

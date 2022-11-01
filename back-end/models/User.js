@@ -1,25 +1,29 @@
 const mongoose = require("mongoose");
-
+require("../config/connectDB");
 mongoose.connect("mongodb://localhost/DATN");
-
 const UserSchema = mongoose.Schema(
   {
-    username: { type: String },
+    email: String,
     password: String,
-    email: { type: String, default: "abc@gmail.com" },
-    avatar: {
-      type: String,
-      default:
-        "https://thumbs.dreamstime.com/z/default-avatar-profile-vector-user-profile-default-avatar-profile-vector-user-profile-profile-179376714.jpg",
-    },
-    phone: { type: Number, default: 0 },
-    address: { type: String, default: "" },
+    fullName: String,
+    phoneNumber: Number,
+    birthDay: Date,
+    address: [{ type: String }],
     token: [],
-    role: { type: String, default: "user" },
   },
   { collection: "user" }
 );
 
 const User = mongoose.model("user", UserSchema);
-
+// User.create({
+//   email: "huyph2711@gmail.com",
+//   password: "123",
+//   fullName: "pham quoc huy",
+// })
+//   .then((data) => {
+//     console.log(data);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 module.exports = User;

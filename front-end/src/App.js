@@ -23,7 +23,10 @@ function App() {
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/category/burger" element={<Product />}></Route>
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
+      {/* <Routes>
+        <Route path="/admin" element={<Login />}></Route>
+      </Routes> */}
     </>
   );
 }

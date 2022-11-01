@@ -57,15 +57,15 @@ function Footer() {
               <p>Theo dõi</p>
               <ul>
                 <li>
-                  <i class="fa-brands fa-facebook"></i>
+                  <i className="fa-brands fa-facebook"></i>
                   <a href="">facebook</a>
                 </li>
                 <li>
-                  <i class="fa-brands fa-instagram"></i>
+                  <i className="fa-brands fa-instagram"></i>
                   <a href="">instagram</a>
                 </li>
                 <li>
-                  <i class="fa-brands fa-twitter"></i>
+                  <i className="fa-brands fa-twitter"></i>
                   <a href="">twitter</a>
                 </li>
                 <div className="bct-logo">

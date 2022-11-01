@@ -1,13 +1,13 @@
 #!/usr/bin/env node
-
+require("dotenv").config();
 /**
  * Module dependencies.
  */
-require("dotenv").config();
+
 var app = require("../app");
 var debug = require("debug")("back-end:server");
 var http = require("http");
-
+const connectDB = require("../config/connectDB");
 /**
  * Get port from environment and store in Express.
  */

@@ -12,7 +12,7 @@ router.post("/create-category", async (req, res) => {
   try {
     let category = Category.create({
       categoryName: req.body.categoryName,
-      thump: req.body.thump,
+      image: req.body.image,
     });
     res.json({ message: "Create category success" });
   } catch (error) {

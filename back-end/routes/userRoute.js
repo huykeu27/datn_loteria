@@ -3,7 +3,7 @@ const { checkLogin, checkAdmin } = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
-
+var authService = require("../middleware/auth");
 //create account
 router.post("/create-account/", async (req, res) => {
   try {
@@ -21,22 +21,35 @@ router.post("/create-account/", async (req, res) => {
 });
 
 //login
-router.post("/sign-in", async (req, res) => {
+router.post("/sign-in", async function (req, res, next) {
   try {
-    const { username, password } = req.body;
-    const user = await User.findOne({ username, password });
-    if (!user)
-      return res.status(400).json({ message: "wrong username or password" });
-    const token = jwt.sign({ id: user._id }, "huy", { expiresIn: 30 });
-    await User.updateOne({ _id: user._id }, { $push: { token: token } });
-    res.status(200).json({ message: "Login success", token });
+    if (!req.body.email || !req.body.password) {
+      return res
+        .status(400)
+        .json({ message: "Thieu email hoac password", errcode: 1 });
+    }
+    let data = await authService.checkLogin(req.body.email, req.body.password);
+
+    if (data) {
+      //push token vào db
+      // await User.updateOne(
+      //   { _id: data.id },
+      //   { $push: { token: data.accessToken } }
+      // );
+      return res.json({ data, errcode: 0 });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Wrong email or password", errcode: 2 });
+    }
+    // checkrole()
   } catch (error) {
-    res.status(500).json({ error, message: "server error" });
+    return res.status(500).json("Khong the dang nhap");
   }
 });
 
 //get all user
-router.get("/get-all-user", checkLogin, checkAdmin, async (req, res) => {
+router.get("/get-all-user", async (req, res) => {
   try {
     const data = User.find();
     res.json({ data });
@@ -47,7 +60,7 @@ router.get("/get-all-user", checkLogin, checkAdmin, async (req, res) => {
 //check
 
 //change password
-router.patch("/update-password", checkLogin, async (req, res) => {
+router.patch("/update-password", async (req, res) => {
   await User.updateOne(
     { _id: req.cookies.user },
     { password: req.body.newPass }
@@ -55,7 +68,7 @@ router.patch("/update-password", checkLogin, async (req, res) => {
   res.status(200).json({ message: "Change password success" });
 });
 //get user by name
-router.get("/get-user-by-name/:username", async (req, res) => {
+router.get("/get-user-by-name/:email", async (req, res) => {
   try {
     let data = await User.find({
       username: { $regex: `${req.params.username}`, $options: "i" },
