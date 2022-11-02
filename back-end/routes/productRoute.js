@@ -24,7 +24,7 @@ router.post("/create-product/", async (req, res) => {
         name: req.body.name,
         categoryId: req.body.categoryId,
         price: req.body.price,
-        image: req.body.thump,
+        image: req.body.image,
       });
       res.status(200).json({ product });
     }

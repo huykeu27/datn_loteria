@@ -17,7 +17,7 @@ const ProductSchema = mongoose.Schema(
       default: 0,
     },
     image: {
-      type: String,
+      type: Buffer,
       require: [true, "Please Enter product image"],
       default: "12ew",
     },

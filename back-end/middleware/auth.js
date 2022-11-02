@@ -1,24 +1,28 @@
 var User = require("../models/User");
 var jwt = require("jsonwebtoken");
-
+var bcrypt = require("bcryptjs");
 exports.checkLogin = async (email, password) => {
   var userFind = await User.findOne({
     email: email,
-    password: password,
   });
 
   if (userFind) {
-    var accessToken = jwt.sign(
-      {
+    let check = bcrypt.compareSync(password, userFind.password);
+    if (check) {
+      var accessToken = jwt.sign(
+        {
+          email: userFind.email,
+        },
+        "huy"
+      );
+      return {
+        id: userFind._id,
         email: userFind.email,
-      },
-      "huy"
-    );
-    return {
-      id: userFind._id,
-      email: userFind.email,
-      accessToken: accessToken,
-    };
+        accessToken: accessToken,
+      };
+    } else {
+      console.log(1);
+    }
   } else {
     return null;
   }

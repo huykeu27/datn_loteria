@@ -4,17 +4,43 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
 var authService = require("../middleware/auth");
+var bcrypt = require("bcryptjs");
+//bcript
+let hashUserPassword = (password) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      var salt = await bcrypt.genSalt(10);
+      var hashPassword = bcrypt.hashSync(password, salt);
+      resolve(hashPassword);
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
 //create account
-router.post("/create-account/", async (req, res) => {
+router.post("/create-account", async (req, res) => {
   try {
-    let data = await User.findOne({ username: req.body.username });
-    if (data) return res.json({ message: "wrong user" });
-    const { username, password } = req.body;
-    let account = await User.create({
-      username,
-      password,
-    });
-    res.json({ account });
+    if (!req.body.fullname || !req.body.email || !req.body.password) {
+      return res
+        .status(400)
+        .json({ message: "Vui long dien day du thong tin", errcode: 1 });
+    } else {
+      let data = await User.findOne({ email: req.body.email });
+      if (data) {
+        return res
+          .status(400)
+          .json({ message: "Email already exist", errcode: 2 });
+      } else {
+        const { fullname, email, password } = req.body;
+        let passwordHash = await hashUserPassword(req.body.password);
+        let account = await User.create({
+          fullname: req.body.fullname,
+          email: req.body.email,
+          password: passwordHash,
+        });
+        res.json({ message: "Tao tai khoan thanh cong", account, errcode: 0 });
+      }
+    }
   } catch (error) {
     res.json(error);
   }
@@ -32,10 +58,10 @@ router.post("/sign-in", async function (req, res, next) {
 
     if (data) {
       //push token vào db
-      // await User.updateOne(
-      //   { _id: data.id },
-      //   { $push: { token: data.accessToken } }
-      // );
+      await User.updateOne(
+        { _id: data.id },
+        { $push: { token: data.accessToken } }
+      );
       return res.json({ data, errcode: 0 });
     } else {
       return res

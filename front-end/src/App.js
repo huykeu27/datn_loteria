@@ -13,20 +13,22 @@ import Category from "./page/user/category/Category";
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import Login from "./components/Login/Login";
+import Account from "./components/User/Account";
 function App() {
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/category" element={<Category />}></Route>
         <Route path="/cart" element={<Cart />}></Route>
         <Route path="/category/burger" element={<Product />}></Route>
+        <Route path="/account" element={<Account />}></Route>
       </Routes>
       {/* <Footer /> */}
-      {/* <Routes>
+      <Routes>
         <Route path="/admin" element={<Login />}></Route>
-      </Routes> */}
+      </Routes>
     </>
   );
 }

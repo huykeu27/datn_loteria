@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import "../Header/header.css";
-import { Modal } from "antd";
-import axios from "axios";
+import { Modal, theme } from "antd";
+import axios from "../../config/axios";
 import { toast } from "react-toastify";
 
 function Header() {
@@ -16,7 +16,14 @@ function Header() {
   const selector = useSelector((state) => state);
   const cartProducts = selector.cartProducts;
   const [isScrolled, setIsScrolled] = useState(false);
+  const [token, setToken] = useState("");
   const [account, setAccount] = useState({ email: "", password: "" });
+  const [newaccount, setNewAccount] = useState({
+    fullname: "",
+    email: "",
+    password: "",
+  });
+  const { fullname, email, password } = newaccount;
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
@@ -31,35 +38,47 @@ function Header() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
   const onChangeEmail = (e) => {
     setAccount({ ...account, email: e.target.value });
-    console.log(account);
   };
   const onChangePassword = (e) => {
     setAccount({ ...account, password: e.target.value });
   };
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setNewAccount((prevState) => {
+      return {
+        ...prevState,
+        [name]: value,
+      };
+    });
+  };
+
   const handleLogin = async () => {
+    const url = "/user/sign-in";
     await axios
-      .post("/user/sign-in", {
+      .post(url, {
         email: account.email,
         password: account.password,
       })
       .then((response) => {
-        console.log(response);
         setCookie("user", response.data.data.accessToken, 1);
         if (response.data.errcode === 0) {
           toast.success("Đăng nhập thành công ", {
             theme: "colored",
           });
+          setToken(response.data.data.accessToken);
+          setIsModalOpen(false);
         }
+
         console.log(response.data.data.accessToken);
       })
       .catch((err) => {
-        console.log(err.response.data);
         if (err.response.data.errcode === 1) {
-          toast.error("Email và mật khẩu không được để trống", {
-            theme: "dark",
+          toast.warning("Email và mật khẩu không được để trống", {
+            theme: "colored",
           });
         } else if (err.response.data.errcode === 2) {
           toast.error("Email hoặc mật khẩu không chính xác", {
@@ -68,9 +87,34 @@ function Header() {
         }
       });
   };
+
+  const handleRegister = async () => {
+    await axios
+      .post("/user/create-account", newaccount)
+      .then((response) => {
+        if (response.data.errcode === 0) {
+          handleOpenLoginForm();
+          toast.success("Đăng kí thành công ", {
+            theme: "colored",
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.data.errcode === 1) {
+          toast.error("Vui lòng điền đầy đủ thông tin", {
+            theme: "colored",
+          });
+        } else if (err.response.data.errcode === 2) {
+          toast.warning("Email đã tồn tại", {
+            theme: "colored",
+          });
+        }
+      });
+  };
   useEffect(() => {
     // getlistProduct();
-  }, []);
+  }, [account]);
   const [isOpenLoginForm, setIsOpenLoginForm] = useState(true);
   const [isOpenRegisterForm, setIsOpenRegisterForm] = useState(false);
 
@@ -98,12 +142,23 @@ function Header() {
           <button>Accept</button>
         </form>
         <div className="header-right">
-          <div className="account" onClick={showModal}>
-            <img
-              src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
-              alt=""
-            />
-          </div>
+          {token && token !== "" ? (
+            <NavLink to="/profile">
+              <div className="account">
+                <img
+                  src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
+                  alt=""
+                />
+              </div>
+            </NavLink>
+          ) : (
+            <div className="account" onClick={showModal}>
+              <img
+                src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
+                alt=""
+              />
+            </div>
+          )}
           <div className="cartLink">
             <img
               src="https://www.lotteria.vn/grs-static/images/icon-cart.svg"
@@ -124,7 +179,7 @@ function Header() {
         >
           <div className="modal-login">
             {isOpenLoginForm === true ? (
-              <div className="form-login">
+              <form className="form-login">
                 <p>Đăng nhập</p>
                 <div className="inp-account">
                   <label>Email</label>
@@ -148,6 +203,7 @@ function Header() {
                 </div>
                 <div className="btn-login">
                   <button
+                    type="button"
                     onClick={() => {
                       handleLogin();
                     }}
@@ -159,7 +215,7 @@ function Header() {
                   Bạn chưa có tài khoản ?
                   <span onClick={handleOpenRegisterForm}>Tạo tài khoản</span>
                 </div>
-              </div>
+              </form>
             ) : (
               ""
             )}
@@ -167,21 +223,49 @@ function Header() {
             {isOpenRegisterForm === true ? (
               <form className="form-login">
                 <p>Đăng ký</p>
-
+                <div className="inp-account">
+                  <label>FullName</label>
+                  <input
+                    type="text"
+                    required={true}
+                    placeholder="Nhập mật khẩu"
+                    onChange={handleChange}
+                    name="fullname"
+                    value={fullname}
+                  />
+                </div>
                 <div className="inp-account">
                   <label>Email</label>
-                  <input type="text" placeholder="Nhập thông tin email" />
+                  <input
+                    type="email"
+                    required={true}
+                    placeholder="Nhập thông tin email"
+                    onChange={handleChange}
+                    name="email"
+                    value={email}
+                  />
                 </div>
                 <div className="inp-account">
                   <label>Password</label>
-                  <input type="password" placeholder="Nhập mật khẩu" />
+                  <input
+                    type="password"
+                    required={true}
+                    placeholder="Nhập mật khẩu"
+                    onChange={handleChange}
+                    name="password"
+                    value={password}
+                  />
                 </div>
-                <div className="inp-account">
-                  <label>Password</label>
-                  <input type="password" placeholder="Nhập mật khẩu" />
-                </div>
+
                 <div className="btn-login">
-                  <button>Đăng kí</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleRegister();
+                    }}
+                  >
+                    Đăng kí
+                  </button>
                 </div>
                 <div className="register">
                   Đã có tài khoản?

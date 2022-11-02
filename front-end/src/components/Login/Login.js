@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import axios from "axios";
+import axios from "../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -8,6 +8,7 @@ function Login() {
   const [listcategory, setListCategory] = useState([]);
   const [productname, setPoductName] = useState("");
   const [categoryid, setCategoryId] = useState("");
+  const [img, setImg] = useState();
   // const getlistProduct = () => {
   //   const url = "/product/get-all-product";
   //   axios
@@ -19,6 +20,17 @@ function Login() {
   //       console.log(err);
   //     });
   // };
+  const handleChangeImg = async (e) => {
+    let file = e.target.files[0];
+
+    if (file) {
+      let base64 = JSON.stringify(file.toString("base64"));
+      // let objectURrl = URL.createObjectURL(file);
+      // setImg(base64);
+      console.log(base64);
+    }
+  };
+
   const getAllCategory = () => {
     const url = "/category/get-all-category";
     axios
@@ -36,6 +48,7 @@ function Login() {
       .post(url, {
         name: productname,
         categoryId: categoryid,
+        image: img,
       })
       .then(function (response) {
         if (response.data.product) {
@@ -59,9 +72,8 @@ function Login() {
       });
   };
   useEffect(() => {
-    // getlistProduct();
     getAllCategory();
-  }, [productname, categoryid]);
+  }, [productname, categoryid, img]);
 
   const onchangeInput = (e) => {
     setPoductName(e.target.value);
@@ -126,14 +138,12 @@ function Login() {
       </select>
       <form>
         <img src="" alt="" />
-        <input id="upload" type="file" multiple />
-        <button
-          onClick={() => {
-            handleUpload();
+        <input
+          type="file"
+          onChange={(e) => {
+            handleChangeImg(e);
           }}
-        >
-          Send
-        </button>
+        />
       </form>
       <button
         onClick={() => {

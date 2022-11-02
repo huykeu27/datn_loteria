@@ -9,6 +9,7 @@ var userRouter = require("./routes/userRoute");
 var productRouter = require("./routes/productRoute");
 var categoryRouter = require("./routes/categoryRoute");
 var uploadRouter = require("./routes/uploadImageRoute");
+const cors = require("cors");
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -18,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(cors());
 // app.use('/users', usersRouter);
 app.use("/", indexRouter);
 app.use("/user", userRouter);
