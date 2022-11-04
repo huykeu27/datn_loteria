@@ -1,0 +1,10 @@
+.customer {
+  margin-left: 300px;
+  margin-top: 50px;
+}
+.customer-table {
+  margin: 50px;
+  padding: 12px;
+  border: 2px solid #ffa39e;
+  border-radius: 8px;
+}

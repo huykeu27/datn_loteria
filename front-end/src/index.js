@@ -6,6 +6,7 @@ import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 const defaultState = {
   products: [
     {

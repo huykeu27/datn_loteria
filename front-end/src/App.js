@@ -1,5 +1,6 @@
 import React from "react";
 import "./App.css";
+import "antd/dist/antd.css";
 import { Route, Router, Routes } from "react-router-dom";
 import Cart from "./components/Cart/Cart";
 import Layout from "./components/Layout/Layout";
@@ -14,10 +15,13 @@ import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import Login from "./components/Login/Login";
 import Account from "./components/User/Account";
+import Admin from "./page/admin/Admin";
+import Customers from "./components/Admin/customer/Customers";
+import CategoryManager from "./components/Admin/category/CategoryManager";
 function App() {
   return (
     <>
-      {/* <Header /> */}
+      {/* <Header />
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/category" element={<Category />}></Route>
@@ -25,9 +29,24 @@ function App() {
         <Route path="/category/burger" element={<Product />}></Route>
         <Route path="/account" element={<Account />}></Route>
       </Routes>
-      {/* <Footer /> */}
+      <Footer /> */}
       <Routes>
-        <Route path="/admin" element={<Login />}></Route>
+        {/* <Route path="/admin" element={<Login />}></Route> */}
+        <Route
+          path="/admin"
+          element={
+            // <PrivateRouteShop sigin={"/sign-in-admin"}>
+            <Admin />
+            // </PrivateRouteShop>
+          }
+        >
+          <Route path="/admin/customers" element={<Customers />} />
+          <Route path="/admin/categories" element={<CategoryManager />} />
+          {/* <Route path="/admin/category" element={<Category />} />
+        <Route path="/admin/dashboard" element={<ShopDashboard />} />
+        <Route path="/admin/shop" element={<Shop />}></Route>
+        <Route path="/admin/user" element={<User />}></Route> */}
+        </Route>
       </Routes>
     </>
   );

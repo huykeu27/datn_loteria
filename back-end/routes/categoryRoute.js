@@ -9,12 +9,21 @@ router.get("/get-all-category", (req, res) => {
 });
 //create category
 router.post("/create-category", async (req, res) => {
+  if (!req.body.categoryName) {
+    return res.status(400).json({ message: "Categoryname null", errcode: 1 });
+  }
   try {
-    let category = Category.create({
+    let data = await Category.findOne({
       categoryName: req.body.categoryName,
-      image: req.body.image,
     });
-    res.json({ message: "Create category success" });
+    if (data) {
+      return res.status(400).json({ errcode: 2, message: "Category none" });
+    } else {
+      let newcategory = await Category.create({
+        categoryName: req.body.categoryName,
+      });
+      res.status(200).json({ message: "Create category success", errcode: 0 });
+    }
   } catch (error) {
     res.json(error);
   }
