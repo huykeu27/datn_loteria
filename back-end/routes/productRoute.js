@@ -13,13 +13,18 @@ router.get("/get-all-product", (req, res) => {
 router.post("/create-product/", async (req, res) => {
   try {
     if (!req.body.name || !req.body.categoryId) {
-      return res.json({ errCode: 1, message: "dien thieu thong tin" });
+      return res
+        .status(400)
+        .json({ message: "dien thieu thong tin", errCode: 1 });
     } else {
       let data = await Product.findOne({
         name: req.body.name,
         categoryId: req.body.categoryId,
       });
-      if (data) return res.json({ message: "Wrong product name" });
+      if (data)
+        return res
+          .status(400)
+          .json({ message: "Wrong product name", errCode: 2 });
       let product = await Product.create({
         name: req.body.name,
         categoryId: req.body.categoryId,
@@ -84,13 +89,16 @@ router.patch("/add-product-thump/:id", async (req, res) => {
 });
 
 //delete product
+
 router.delete("/delete-product/:id", async (req, res) => {
   try {
-    let product = await Product.findOneAndRemove({ _id: req.params.id });
-    if (!product) return res.json({ message: "Product not found" });
-    res.json({ message: "Delete product success" });
+    let product = await Product.findOne({ _id: req.params.id });
+    if (product) {
+      await product.remove();
+      res.json("success");
+    }
   } catch (error) {
-    res.json(error);
+    res.json({ error });
   }
 });
 module.exports = router;

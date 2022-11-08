@@ -7,7 +7,6 @@ function Admin() {
   return (
     <>
       <Topnav />
-
       <Sidebar />
       <Outlet />
     </>

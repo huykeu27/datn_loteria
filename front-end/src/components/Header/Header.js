@@ -15,6 +15,8 @@ function Header() {
   }
   const selector = useSelector((state) => state);
   const cartProducts = selector.cartProducts;
+  const [isOpenLoginForm, setIsOpenLoginForm] = useState(true);
+  const [isOpenRegisterForm, setIsOpenRegisterForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [token, setToken] = useState("");
   const [account, setAccount] = useState({ email: "", password: "" });
@@ -28,7 +30,7 @@ function Header() {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
   };
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -115,8 +117,6 @@ function Header() {
   useEffect(() => {
     // getlistProduct();
   }, [account]);
-  const [isOpenLoginForm, setIsOpenLoginForm] = useState(true);
-  const [isOpenRegisterForm, setIsOpenRegisterForm] = useState(false);
 
   const handleOpenLoginForm = () => {
     setIsOpenLoginForm(true);

@@ -10,6 +10,7 @@ const UserSchema = mongoose.Schema(
     birthDay: Date,
     address: [{ type: String }],
     token: [],
+    status: { type: Boolean, default: true },
   },
   { collection: "user" }
 );

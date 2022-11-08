@@ -1,6 +1,8 @@
 import React from "react";
 import "../Product/product.css";
 import { useDispatch, useSelector } from "react-redux";
+import Header from "../Header/Header";
+import Footer from "../Footer/Footer";
 
 function Product() {
   const selector = useSelector((state) => state);
@@ -22,20 +24,26 @@ function Product() {
   }
 
   return (
-    <div className="productsList">
-      {products.map((item, index) => (
-        <div className="product" key={index}>
-          <img src={item.img} alt="" />
-          <h3>{item.name}</h3>
-          <div className="priceBlock">
-            <span className="productPrice">{item.price.toLocaleString()}đ</span>
-            <button onClick={() => addToCart(item.id)}>
-              Thêm vào giỏ hàng
-            </button>
+    <>
+      <Header />
+      <div className="productsList">
+        {products.map((item, index) => (
+          <div className="product" key={index}>
+            <img src={item.img} alt="" />
+            <h3>{item.name}</h3>
+            <div className="priceBlock">
+              <span className="productPrice">
+                {item.price.toLocaleString()}đ
+              </span>
+              <button onClick={() => addToCart(item.id)}>
+                Thêm vào giỏ hàng
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      <Footer />
+    </>
   );
 }
 

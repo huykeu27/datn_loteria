@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
 var authService = require("../middleware/auth");
-// var bcrypt = require("bcryptjs");
 
 // bcript;
 let hashUserPassword = (password) => {
@@ -73,8 +72,8 @@ router.post("/sign-in", async function (req, res, next) {
 //get all user
 router.get("/get-all-user", async (req, res) => {
   try {
-    const data = User.find();
-    res.json({ data });
+    const listuser = await User.find();
+    res.json(listuser);
   } catch (error) {
     res.json(error);
   }
@@ -111,5 +110,17 @@ router.get("/get-self-info", async (req, res) => {
     res.status(500).json({ error, message: "server error" });
   }
 });
+//remove user
 
+router.delete("/remove-user/:id", async (req, res) => {
+  try {
+    let user = await User.findOne({ _id: req.params.id });
+    if (user) {
+      await user.remove();
+      res.json("success");
+    }
+  } catch (error) {
+    res.json({ error });
+  }
+});
 module.exports = router;

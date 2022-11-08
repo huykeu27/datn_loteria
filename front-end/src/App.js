@@ -18,6 +18,7 @@ import Account from "./components/User/Account";
 import Admin from "./page/admin/Admin";
 import Customers from "./components/Admin/customer/Customers";
 import CategoryManager from "./components/Admin/category/CategoryManager";
+import ProductManager from "./components/Admin/product/ProductManager";
 function App() {
   return (
     <>
@@ -31,7 +32,10 @@ function App() {
       </Routes>
       <Footer /> */}
       <Routes>
-        {/* <Route path="/admin" element={<Login />}></Route> */}
+        <Route path="" element={<Home />}></Route>
+        <Route path="/cart" element={<Cart />}></Route>
+        <Route path="/category/burger" element={<Product />}></Route>
+
         <Route
           path="/admin"
           element={
@@ -42,10 +46,7 @@ function App() {
         >
           <Route path="/admin/customers" element={<Customers />} />
           <Route path="/admin/categories" element={<CategoryManager />} />
-          {/* <Route path="/admin/category" element={<Category />} />
-        <Route path="/admin/dashboard" element={<ShopDashboard />} />
-        <Route path="/admin/shop" element={<Shop />}></Route>
-        <Route path="/admin/user" element={<User />}></Route> */}
+          <Route path="/admin/products" element={<ProductManager />} />
         </Route>
       </Routes>
     </>

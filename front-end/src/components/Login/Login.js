@@ -136,15 +136,7 @@ function Login() {
             </option>
           ))}
       </select>
-      <form>
-        <img src="" alt="" />
-        <input
-          type="file"
-          onChange={(e) => {
-            handleChangeImg(e);
-          }}
-        />
-      </form>
+
       <button
         onClick={() => {
           handleCreateNewCategory();

@@ -94,6 +94,16 @@ function CategoryManager() {
     setListCategory(result);
   };
 
+  const onchangeInput = (event) => {
+    const { name, value } = event.target;
+
+    setState((prevState) => {
+      return {
+        ...prevState,
+        [name]: value,
+      };
+    });
+  };
   const handleCreateNewCategory = async () => {
     const url = "/category/create-category";
     await axios
@@ -113,22 +123,13 @@ function CategoryManager() {
       });
   };
   console.log(state);
-  const onchangeInput = (event) => {
-    const { name, value } = event.target;
-
-    setState((prevState) => {
-      return {
-        ...prevState,
-        [name]: value,
-      };
-    });
-  };
 
   const handleDeleteCategory = async (id) => {
     const url = `/category/delete-category/${id}`;
     await axios
       .delete(url)
       .then(function (response) {
+        toast.success("Xóa danh mục thành công");
         getAllCategory();
         console.log(response);
       })
