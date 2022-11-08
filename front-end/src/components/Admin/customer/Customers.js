@@ -23,16 +23,6 @@ const columns = [
 
     dataIndex: "tags",
   },
-  {
-    title: "Action",
-
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
 ];
 const data = [
   {
@@ -57,6 +47,7 @@ const data = [
     tags: ["cool", "teacher"],
   },
 ];
+
 const Customers = () => {
   return (
     <div className="customer">

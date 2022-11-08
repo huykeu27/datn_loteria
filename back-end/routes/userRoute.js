@@ -4,19 +4,15 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
 var authService = require("../middleware/auth");
-var bcrypt = require("bcryptjs");
-//bcript
+// var bcrypt = require("bcryptjs");
+
+// bcript;
 let hashUserPassword = (password) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      var salt = await bcrypt.genSalt(10);
-      var hashPassword = bcrypt.hashSync(password, salt);
-      resolve(hashPassword);
-    } catch (e) {
-      reject(e);
-    }
-  });
+  const bcrypt = require("bcrypt");
+  const saltRounds = 10;
+  return bcrypt.hash(password, saltRounds);
 };
+
 //create account
 router.post("/create-account", async (req, res) => {
   try {
@@ -34,7 +30,7 @@ router.post("/create-account", async (req, res) => {
         const { fullname, email, password } = req.body;
         let passwordHash = await hashUserPassword(req.body.password);
         let account = await User.create({
-          fullname: req.body.fullname,
+          fullName: req.body.fullname,
           email: req.body.email,
           password: passwordHash,
         });

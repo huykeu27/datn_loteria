@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Category = require("../models/Category");
+var ObjectId = require("mongodb").ObjectId;
 //get all category
 router.get("/get-all-category", (req, res) => {
   Category.find()
@@ -39,33 +40,56 @@ router.get("/get-category-by-id/:id", async (req, res) => {
   }
 });
 
-//change category name
-router.patch("/change-category-name/:id", async (req, res) => {
+//update
+router.put("/update-category/:id", async (req, res) => {
   try {
-    let category = await Category.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        categoryName: req.body.newCategoryname,
+    const category = await Category.findOne({ _id: req.params.id });
+    if (category) {
+      if (!req.body.categoryName) {
+        return res.status(400).json({ errcode: 1, message: "Value null" });
+      } else {
+        let check = await Category.findOne({
+          categoryName: req.body.categoryName,
+        });
+        if (check) {
+          return res.status(400).json({ errcode: 2, message: "da ton tai" });
+        } else {
+          let update = await category.update({
+            categoryName: req.body.categoryName,
+          });
+          res.status(200).json(update);
+        }
       }
-    );
-    res.json({ message: "Update categoryname success" });
+    }
+    // const category = await Category.findByIdAndUpdate(req.params.id, {
+    //   categoryName: req.body.categoryName,
+    // });
+    // let check = await Category.findOne({
+    //   categoryName: category.categoryName,
+    // });
+    // if (check) {
+    //   res
+    //     .status(400)
+    //     .json({ errcode: 2, message: "Ten danh muc da ton tai" });
+    // } else {
+    //   res.json("success");
+    // }
   } catch (error) {
-    res.json(error);
+    res.json({ error });
   }
 });
+//delete category
 
-//change category thump
-router.patch("/change-category-thump/:id", async (req, res) => {
+router.delete("/delete-category/:id", async (req, res) => {
   try {
-    let category = await Category.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        thump: req.body.newthump,
-      }
-    );
-    res.json({ message: "Update thump success" });
+    let category = await Category.findOne({ _id: req.params.id });
+    if (category) {
+      await category.remove();
+      res.json("success");
+    }
   } catch (error) {
-    res.json(error);
+    console.log(0);
+    res.json({ error });
   }
 });
 

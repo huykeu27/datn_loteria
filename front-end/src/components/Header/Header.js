@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import "../Header/header.css";
-import { Modal, theme } from "antd";
+import { Modal } from "antd";
 import axios from "../../config/axios";
 import { toast } from "react-toastify";
 
@@ -224,11 +224,11 @@ function Header() {
               <form className="form-login">
                 <p>Đăng ký</p>
                 <div className="inp-account">
-                  <label>FullName</label>
+                  <label>Tên đầy đủ</label>
                   <input
                     type="text"
                     required={true}
-                    placeholder="Nhập mật khẩu"
+                    placeholder="Nhập tên đầy đủ"
                     onChange={handleChange}
                     name="fullname"
                     value={fullname}
