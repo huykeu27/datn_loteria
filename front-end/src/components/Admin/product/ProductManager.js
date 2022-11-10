@@ -3,18 +3,20 @@ import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "./productmanager.css";
-import { Space, Table, Tag, Modal } from "antd";
+import { Table, Modal } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 function ProductManager() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [listproducts, setListProducts] = useState([]);
   const [listcategory, setListCategory] = useState([]);
-
   const [state, setState] = useState({
+    id: "",
     productname: "",
     categoryId: "",
-    price: 0,
+    price: "",
   });
+
   const columns = [
     {
       title: "ID",
@@ -40,7 +42,17 @@ function ProductManager() {
       render: (record) => {
         return (
           <>
-            <EditOutlined />
+            <EditOutlined
+              onClick={() => {
+                setState({
+                  ...state,
+                  id: record._id,
+                  productname: record.name,
+                  price: record.price,
+                });
+                setIsModalOpen(true);
+              }}
+            />
             <DeleteOutlined
               onClick={() => {
                 if (window.confirm("Bạn chắc chắn muốn xóa không???")) {
@@ -96,7 +108,10 @@ function ProductManager() {
       };
     });
   };
-
+  const handleCancel = () => {
+    setState({ ...state, productname: "", categoryId: "", price: 0 });
+    setIsModalOpen(false);
+  };
   const handleCreateNewProduct = async () => {
     const url = "/product/create-product";
     await axios
@@ -108,19 +123,19 @@ function ProductManager() {
       .then(function (response) {
         if (response.data.product) {
           setState({ ...state, productname: "", categoryId: "", price: 0 });
-          toast.success("thanh cong", {
+          toast.success("Thêm sản phẩm thành công", {
             theme: "colored",
           });
         }
       })
       .catch(function (error) {
         if (error.response.data.errCode === 1) {
-          toast.error(error.response.data.message, {
+          toast.error("Mời nhập đầy đủ thông tin", {
             theme: "colored",
           });
         } else if (error.response.data.errCode === 2) {
-          toast.error("da ton tai", {
-            theme: "dark",
+          toast.error("Sản phẩm đã tồn tại", {
+            theme: "colored",
           });
         } else {
           alert("Không xác định");
@@ -140,12 +155,38 @@ function ProductManager() {
         console.log(err);
       });
   };
+
+  const handleUpdateProduct = async () => {
+    const url = `/product/update-product/${state.id}`;
+    await axios
+      .put(url, { name: state.productname, price: state.price })
+      .then((response) => {
+        toast.success("Update thành công");
+        getAllProduct();
+        setIsModalOpen(false);
+      })
+      .catch((err) => {
+        if (err.response.data.errcode === 1) {
+          toast.warning("Mời nhập đầy đủ thông tin", {
+            theme: "colored",
+          });
+        } else if (err.response.data.errcode === 2) {
+          toast.warning("Sản phẩm đã tồn tại", {
+            theme: "colored",
+          });
+        } else {
+          alert("Không xác định");
+        }
+        console.log(err);
+      });
+  };
   return (
     <div className="product-manager ">
       <div className="form-create-product">
         <div>
-          <span>Tên sản phẩm</span>
           <input
+            placeholder="Tên sản phẩm"
+            className="form__field"
             value={state.productname}
             name="productname"
             type="text"
@@ -155,8 +196,7 @@ function ProductManager() {
             }}
           />
         </div>
-        <div>
-          Phân loại
+        <div className="select-category">
           <select
             value={state.categoryId}
             name="categoryId"
@@ -165,7 +205,7 @@ function ProductManager() {
               onChangeValue(e);
             }}
           >
-            <option value="">Select Category</option>
+            <option value="">Danh mục</option>
             {listcategory &&
               listcategory.length > 0 &&
               listcategory.map((item) => (
@@ -177,10 +217,12 @@ function ProductManager() {
         </div>
         <div>
           <input
+            className="form__field select-price"
             value={state.price}
             name="price"
             type="number"
             id="price"
+            placeholder="VNĐ"
             onChange={(e) => {
               onChangeValue(e);
             }}
@@ -207,7 +249,33 @@ function ProductManager() {
           pageSizeOptions: ["5", "10 ", "15"],
         }}
       />
-      <></>
+      <Modal
+        title="Thông tin sản phẩm"
+        open={isModalOpen}
+        onOk={handleUpdateProduct}
+        onCancel={handleCancel}
+      >
+        <span>ID</span>
+        <input value={state.id} type="text" id="idproduct" disabled />
+        <br />
+        <span>Tên sản phẩm</span>
+        <input
+          value={state.productname}
+          name="productname"
+          type="text"
+          id="product-name"
+          onChange={onChangeValue}
+        />
+        <span>Giá</span>
+        <input
+          value={state.price}
+          name="price"
+          type="text"
+          id="product-price"
+          placeholder="VNĐ"
+          onChange={onChangeValue}
+        />
+      </Modal>
     </div>
   );
 }

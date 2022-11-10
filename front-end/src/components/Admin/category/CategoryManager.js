@@ -3,20 +3,19 @@ import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "./categorymanager.css";
-import { Space, Table, Tag, Modal } from "antd";
+import { Table, Modal } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+
 function CategoryManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [listcategory, setListCategory] = useState([]);
-  // const [newcategory, setNewCategory] = useState("");
-  // const [detailcategory, setDetailCategory] = useState("");
   const [state, setState] = useState({
     id: "",
-    newcategory: "",
-    detailcategory: "",
+    categoryName: "",
   });
 
   const handleCancel = () => {
+    setState({ ...state, categoryName: "" });
     setIsModalOpen(false);
   };
   const columns = [
@@ -42,7 +41,7 @@ function CategoryManager() {
                 setState({
                   ...state,
                   id: record._id,
-                  detailcategory: record.categoryName,
+                  categoryName: record.categoryName,
                 });
                 setIsModalOpen(true);
               }}
@@ -108,10 +107,10 @@ function CategoryManager() {
     const url = "/category/create-category";
     await axios
       .post(url, {
-        categoryName: state.newcategory,
+        categoryName: state.categoryName,
       })
       .then(function (response) {
-        setState({ ...state, newcategory: "" });
+        setState({ ...state, categoryName: "" });
         toast.success("Thêm danh mục thành công");
       })
       .catch(function (err) {
@@ -122,7 +121,6 @@ function CategoryManager() {
         }
       });
   };
-  console.log(state);
 
   const handleDeleteCategory = async (id) => {
     const url = `/category/delete-category/${id}`;
@@ -140,9 +138,9 @@ function CategoryManager() {
 
   const handleUpdateCategory = async () => {
     const url = `/category/update-category/${state.id}`;
-    console.log(state.detailcategory);
+    console.log(state.categoryName);
     await axios
-      .put(url, { categoryName: state.detailcategory })
+      .put(url, { categoryName: state.categoryName })
       .then((response) => {
         toast.success("Update thành công");
         getAllCategory();
@@ -161,24 +159,27 @@ function CategoryManager() {
   };
   return (
     <div className="category-manager">
-      <div>
-        <span>Danh mục</span>
+      <div className="create-new-category">
         <input
-          value={state.newcategory}
-          name="newcategory"
+          placeholder="Tên danh mục"
+          className="form__field"
+          value={state.categoryName}
+          name="categoryName"
           type="text"
           id="category"
           onChange={onchangeInput}
         />
+        <div className="add-category">
+          <button
+            className="submit"
+            onClick={() => {
+              handleCreateNewCategory();
+            }}
+          >
+            thêm
+          </button>
+        </div>
       </div>
-
-      <button
-        onClick={() => {
-          handleCreateNewCategory();
-        }}
-      >
-        thêm
-      </button>
 
       <Table
         className="customer-table"
@@ -193,7 +194,7 @@ function CategoryManager() {
       />
       <>
         <Modal
-          title="Thay đổi danh mục"
+          title="Thông tin danh mục"
           open={isModalOpen}
           onOk={handleUpdateCategory}
           onCancel={handleCancel}
@@ -203,8 +204,8 @@ function CategoryManager() {
           <br />
           <span>Danh mục</span>
           <input
-            value={state.detailcategory}
-            name="detailcategory"
+            value={state.categoryName}
+            name="categoryName"
             type="text"
             id="category"
             onChange={onchangeInput}

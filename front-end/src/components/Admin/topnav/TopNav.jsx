@@ -1,8 +1,5 @@
 import React from "react";
-
 import "./topnav.css";
-
-import { Link } from "react-router-dom";
 
 const curr_user = {
   display_name: "Admin Manager",

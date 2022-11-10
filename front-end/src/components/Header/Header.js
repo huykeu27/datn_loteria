@@ -184,8 +184,8 @@ function Header() {
                 <div className="inp-account">
                   <label>Email</label>
                   <input
-                    type="text"
-                    placeholder="Nhập thông tin email"
+                    type="email"
+                    placeholder="abc@gmail.com"
                     onChange={(e) => {
                       onChangeEmail(e);
                     }}
@@ -239,7 +239,7 @@ function Header() {
                   <input
                     type="email"
                     required={true}
-                    placeholder="Nhập thông tin email"
+                    placeholder="abc@gmail.com"
                     onChange={handleChange}
                     name="email"
                     value={email}

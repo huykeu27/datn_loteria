@@ -12,10 +12,8 @@ router.get("/get-all-product", (req, res) => {
 //create product
 router.post("/create-product/", async (req, res) => {
   try {
-    if (!req.body.name || !req.body.categoryId) {
-      return res
-        .status(400)
-        .json({ message: "dien thieu thong tin", errCode: 1 });
+    if (!req.body.name || !req.body.categoryId || req.body.price === 0) {
+      return res.status(400).json({ message: "Value null", errCode: 1 });
     } else {
       let data = await Product.findOne({
         name: req.body.name,
@@ -99,6 +97,34 @@ router.delete("/delete-product/:id", async (req, res) => {
     }
   } catch (error) {
     res.json({ error });
+  }
+});
+
+//update product
+router.put("/update-product/:id", async (req, res) => {
+  try {
+    const product = await Product.findOne({ _id: req.params.id });
+    if (product) {
+      if (!req.body.name || req.body.price === 0) {
+        return res.status(400).json({ errcode: 1, message: "Value null" });
+      } else {
+        let check = await Product.findOne({
+          name: req.body.name,
+          price: req.body.price,
+        });
+        if (check) {
+          return res.status(400).json({ errcode: 2, message: "Already exist" });
+        } else {
+          let update = await product.update({
+            name: req.body.name,
+            price: req.body.price,
+          });
+          res.status(200).json(update);
+        }
+      }
+    }
+  } catch (error) {
+    res.status(400).json({ error });
   }
 });
 module.exports = router;

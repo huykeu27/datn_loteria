@@ -18,12 +18,14 @@ router.post("/create-category", async (req, res) => {
       categoryName: req.body.categoryName,
     });
     if (data) {
-      return res.status(400).json({ errcode: 2, message: "Category none" });
+      return res.status(400).json({ message: "Already exist", errcode: 2 });
     } else {
       let newcategory = await Category.create({
         categoryName: req.body.categoryName,
       });
-      res.status(200).json({ message: "Create category success", errcode: 0 });
+      res
+        .status(200)
+        .json({ newcategory, message: "Create category success", errcode: 0 });
     }
   } catch (error) {
     res.json(error);
@@ -52,7 +54,7 @@ router.put("/update-category/:id", async (req, res) => {
           categoryName: req.body.categoryName,
         });
         if (check) {
-          return res.status(400).json({ errcode: 2, message: "da ton tai" });
+          return res.status(400).json({ errcode: 2, message: "Already exist" });
         } else {
           let update = await category.update({
             categoryName: req.body.categoryName,
@@ -61,25 +63,11 @@ router.put("/update-category/:id", async (req, res) => {
         }
       }
     }
-    // const category = await Category.findByIdAndUpdate(req.params.id, {
-    //   categoryName: req.body.categoryName,
-    // });
-    // let check = await Category.findOne({
-    //   categoryName: category.categoryName,
-    // });
-    // if (check) {
-    //   res
-    //     .status(400)
-    //     .json({ errcode: 2, message: "Ten danh muc da ton tai" });
-    // } else {
-    //   res.json("success");
-    // }
   } catch (error) {
-    res.json({ error });
+    res.status(400).json({ error });
   }
 });
 //delete category
-
 router.delete("/delete-category/:id", async (req, res) => {
   try {
     let category = await Category.findOne({ _id: req.params.id });
