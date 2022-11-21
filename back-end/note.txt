@@ -1,0 +1,11 @@
+get /api/category     get all
+post /api/category     creeate 
+put /api/category/:id     replce 
+patch /api/category/:id     upate 
+delete /api/category/:id     delete 
+get /api/category/:id     get one
+
+
+
+fix loi restful
+router => middwwre  => service => model

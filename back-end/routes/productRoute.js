@@ -73,19 +73,6 @@ router.get("/get-product-by-name/:productName", async (req, res) => {
   }
 });
 
-//add product thump
-router.patch("/add-product-thump/:id", async (req, res) => {
-  try {
-    let product = await Product.findOneAndUpdate(
-      { _id: req.params.id },
-      { thump: req.body.newthump }
-    );
-    res.json({ message: "Add thumpp success" });
-  } catch (error) {
-    res.json(error);
-  }
-});
-
 //delete product
 
 router.delete("/delete-product/:id", async (req, res) => {
@@ -105,12 +92,13 @@ router.put("/update-product/:id", async (req, res) => {
   try {
     const product = await Product.findOne({ _id: req.params.id });
     if (product) {
-      if (!req.body.name || req.body.price === 0) {
+      if (!req.body.name || req.body.price === 0 || !req.body.categoryId) {
         return res.status(400).json({ errcode: 1, message: "Value null" });
       } else {
         let check = await Product.findOne({
           name: req.body.name,
           price: req.body.price,
+          categoryId: req.body.categoryId,
         });
         if (check) {
           return res.status(400).json({ errcode: 2, message: "Already exist" });
@@ -118,6 +106,7 @@ router.put("/update-product/:id", async (req, res) => {
           let update = await product.update({
             name: req.body.name,
             price: req.body.price,
+            categoryId: req.body.categoryId,
           });
           res.status(200).json(update);
         }

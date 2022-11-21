@@ -3,15 +3,28 @@ import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "./categorymanager.css";
-import { Table, Modal } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import {
+  Table,
+  Modal,
+  Tag,
+  Switch,
+  Form,
+  Input,
+  Button,
+  Upload,
+  uploadButton,
+} from "antd";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 function CategoryManager() {
+  const [showform, setShowForm] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [listcategory, setListCategory] = useState([]);
   const [state, setState] = useState({
     id: "",
     categoryName: "",
+    image: {},
+    enable: true,
   });
 
   const handleCancel = () => {
@@ -28,8 +41,32 @@ function CategoryManager() {
       dataIndex: "categoryName",
     },
     {
+      title: "Ảnh",
+      render: (record) => {
+        return (
+          <>
+            <img src={record.imageUrl} alt="" width={60} height={60} />
+          </>
+        );
+      },
+    },
+    {
       title: "Trạng thái",
-      dataIndex: "status",
+      render: (record) => {
+        return (
+          <>
+            {record.enable === true ? (
+              <>
+                <Tag color="green">Đang hoạt động</Tag>
+              </>
+            ) : (
+              <>
+                <Tag color="red">Ngưng hoạt động</Tag>
+              </>
+            )}
+          </>
+        );
+      },
     },
     {
       title: "Hành động",
@@ -42,6 +79,7 @@ function CategoryManager() {
                   ...state,
                   id: record._id,
                   categoryName: record.categoryName,
+                  enable: record.enable,
                 });
                 setIsModalOpen(true);
               }}
@@ -62,13 +100,21 @@ function CategoryManager() {
       },
     },
   ];
+  const getBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
   const getAllCategory = async () => {
     const url = "/category/get-all-category";
     await axios
       .get(url)
       .then((res) => {
-        buildData(res.data.listCategories);
+        setListCategory(res.data.listCategories);
       })
       .catch((err) => {
         console.log(err);
@@ -77,21 +123,6 @@ function CategoryManager() {
   useEffect(() => {
     getAllCategory();
   }, [state]);
-
-  const buildData = (data) => {
-    let result = [];
-    if (data && data.length > 0) {
-      data.map((item) => {
-        let obj = {};
-        obj._id = item._id;
-        obj.categoryName = item.categoryName;
-        obj.status =
-          item.enable === true ? "Đang hoạt động" : "Ngưng hoạt động";
-        result.push(obj);
-      });
-    }
-    setListCategory(result);
-  };
 
   const onchangeInput = (event) => {
     const { name, value } = event.target;
@@ -103,14 +134,33 @@ function CategoryManager() {
       };
     });
   };
+  const onChangeSwitch = (checked) => {
+    setState({ ...state, enable: checked });
+  };
+  const onChangeUpload = (e) => {
+    console.log(e.file);
+    setState({ ...state, image: e.file });
+  };
+
   const handleCreateNewCategory = async () => {
     const url = "/category/create-category";
+    // var formData = new FormData().append("img-cat");
+
     await axios
-      .post(url, {
-        categoryName: state.categoryName,
-      })
+      .post(
+        url,
+        {
+          categoryName: state.categoryName,
+          file: state.image,
+        }
+        // {
+        //   headers: { "Content-Type": "multipart/form-data" },
+        //   processData: false,
+        //   contentType: false,
+        // }
+      )
       .then(function (response) {
-        setState({ ...state, categoryName: "" });
+        setState({ ...state, categoryName: "", image: {} });
         toast.success("Thêm danh mục thành công");
       })
       .catch(function (err) {
@@ -121,7 +171,9 @@ function CategoryManager() {
         }
       });
   };
-
+  const hanleAddCategory = () => {
+    setShowForm(!showform);
+  };
   const handleDeleteCategory = async (id) => {
     const url = `/category/delete-category/${id}`;
     await axios
@@ -138,9 +190,9 @@ function CategoryManager() {
 
   const handleUpdateCategory = async () => {
     const url = `/category/update-category/${state.id}`;
-    console.log(state.categoryName);
+
     await axios
-      .put(url, { categoryName: state.categoryName })
+      .put(url, { categoryName: state.categoryName, enable: state.enable })
       .then((response) => {
         toast.success("Update thành công");
         getAllCategory();
@@ -159,27 +211,62 @@ function CategoryManager() {
   };
   return (
     <div className="category-manager">
-      <div className="create-new-category">
-        <input
-          placeholder="Tên danh mục"
-          className="form__field"
-          value={state.categoryName}
-          name="categoryName"
-          type="text"
-          id="category"
-          onChange={onchangeInput}
-        />
-        <div className="add-category">
-          <button
-            className="submit"
-            onClick={() => {
-              handleCreateNewCategory();
-            }}
-          >
-            thêm
-          </button>
-        </div>
+      <div className="add-new-category">
+        <span>Thêm mới danh mục</span>
+        <PlusOutlined onClick={hanleAddCategory} />
       </div>
+      {showform && (
+        <div className="create-new-category">
+          <Form
+            labelCol={{
+              span: 4,
+            }}
+            wrapperCol={{
+              span: 14,
+            }}
+            layout="horizontal"
+          >
+            <Form.Item label="Danh mục">
+              <Input
+                value={state.categoryName}
+                name="categoryName"
+                type="text"
+                id="category"
+                onChange={onchangeInput}
+              />
+            </Form.Item>
+
+            <Form.Item label="Upload" valuePropName="fileList">
+              {/* <Upload action={} listType="picture-card" onChange={onChangeUpload}>
+                <div>
+                  <PlusOutlined />
+                  Upload
+                </div>
+              </Upload> */}
+              <Upload
+                listType="picture-card"
+                maxCount={1}
+                onChange={onChangeUpload}
+              >
+                <div>
+                  <PlusOutlined />
+                  Upload
+                </div>
+              </Upload>
+            </Form.Item>
+            <Form.Item>
+              <Button
+                type="primary"
+                onClick={() => {
+                  handleCreateNewCategory();
+                }}
+              >
+                Thêm mới
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
+      )}
 
       <Table
         className="customer-table"
@@ -198,18 +285,54 @@ function CategoryManager() {
           open={isModalOpen}
           onOk={handleUpdateCategory}
           onCancel={handleCancel}
+          okText="Lưu thay đổi"
+          cancelText="Hủy"
         >
-          <span>ID</span>
-          <input value={state.id} type="text" id="category" disabled />
-          <br />
-          <span>Danh mục</span>
-          <input
-            value={state.categoryName}
-            name="categoryName"
-            type="text"
-            id="category"
-            onChange={onchangeInput}
-          />
+          <Form
+            labelCol={{
+              span: 4,
+            }}
+            wrapperCol={{
+              span: 14,
+            }}
+            layout="horizontal"
+          >
+            <Form.Item label="ID">
+              <Input
+                value={state.id}
+                type="text"
+                id="category"
+                disabled
+              ></Input>
+            </Form.Item>
+            <Form.Item label="Danh mục">
+              <Input
+                value={state.categoryName}
+                name="categoryName"
+                type="text"
+                id="category"
+                onChange={onchangeInput}
+              />
+            </Form.Item>
+
+            <Form.Item label="Upload" valuePropName="fileList">
+              <Upload action="/upload.do" listType="picture-card">
+                <div>
+                  <PlusOutlined />
+                  <div
+                    style={{
+                      marginTop: 8,
+                    }}
+                  >
+                    Upload
+                  </div>
+                </div>
+              </Upload>
+            </Form.Item>
+            <Form.Item label="Trạng thái">
+              <Switch checked={state.enable} onChange={onChangeSwitch} />
+            </Form.Item>
+          </Form>
         </Modal>
       </>
     </div>

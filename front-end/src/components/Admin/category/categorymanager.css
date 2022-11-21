@@ -90,3 +90,13 @@
   align-items: center;
   padding: 15px;
 }
+
+.add-new-category {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin-right: 30px;
+}
+.add-new-category span {
+  margin-right: 5px;
+}

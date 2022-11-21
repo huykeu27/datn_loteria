@@ -160,11 +160,12 @@ function Header() {
             </div>
           )}
           <div className="cartLink">
-            <img
-              src="https://www.lotteria.vn/grs-static/images/icon-cart.svg"
-              alt=""
-            />
-            <NavLink to="/cart">Cart</NavLink>
+            <NavLink to="/cart">
+              <img
+                src="https://www.lotteria.vn/grs-static/images/icon-cart.svg"
+                alt=""
+              />
+            </NavLink>
             <span>{cartProducts.length}</span>
           </div>
         </div>

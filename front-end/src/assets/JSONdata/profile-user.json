@@ -1,0 +1,22 @@
+[
+  {
+    "display_name": "Thông tin tài khoản",
+    "route": "/profile",
+    "icon": "<MessageOutlined />"
+  },
+  {
+    "display_name": "Địa chỉ",
+    "route": "/profile/address",
+    "icon": "bx bx-user-pin"
+  },
+  {
+    "display_name": "Đơn hàng",
+    "route": "/profile/order",
+    "icon": "bx bx-package"
+  },
+  {
+    "display_name": "Đăng xuất",
+    "route": "/",
+    "icon": "bx bx-cart"
+  }
+]

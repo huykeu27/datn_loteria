@@ -2,14 +2,6 @@
   margin-left: 300px;
 }
 .form-create-product {
-  margin: 0 auto;
-  height: 300px;
-  width: 300px;
-  border: 3px solid black;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
   padding: 50px 0;
 }
 .select-category {
@@ -34,4 +26,13 @@
 
 ::placeholder {
   font-size: 16px;
+}
+.add-new-product {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin-right: 30px;
+}
+.add-new-product span {
+  margin-right: 5px;
 }

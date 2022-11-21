@@ -2,12 +2,15 @@ import React, { useEffect } from "react";
 import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
+
 import "./productmanager.css";
-import { Table, Modal } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Modal, Form, Input, Select, Button, Upload } from "antd";
+import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import FormDisabledDemo from "./FormDisabledDemo";
 
 function ProductManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [listproducts, setListProducts] = useState([]);
   const [listcategory, setListCategory] = useState([]);
   const [state, setState] = useState({
@@ -35,7 +38,12 @@ function ProductManager() {
       dataIndex: "createdAt",
     },
     {
+      title: "Ngày cập nhật",
+      dataIndex: "updatedAt",
+    },
+    {
       title: "Danh mục",
+      dataIndex: ["categoryId", "categoryName"],
     },
     {
       title: "Hành động",
@@ -98,9 +106,11 @@ function ProductManager() {
     getAllProduct();
     getAllCategory();
   }, [state]);
+  const hanleAddProduct = () => {
+    setShowForm(!showForm);
+  };
   const onChangeValue = (event) => {
     const { name, value } = event.target;
-
     setState((prevState) => {
       return {
         ...prevState,
@@ -108,6 +118,15 @@ function ProductManager() {
       };
     });
   };
+  const onChangSelect = (value) => {
+    setState((prevState) => {
+      return {
+        ...prevState,
+        categoryId: value,
+      };
+    });
+  };
+
   const handleCancel = () => {
     setState({ ...state, productname: "", categoryId: "", price: 0 });
     setIsModalOpen(false);
@@ -159,7 +178,11 @@ function ProductManager() {
   const handleUpdateProduct = async () => {
     const url = `/product/update-product/${state.id}`;
     await axios
-      .put(url, { name: state.productname, price: state.price })
+      .put(url, {
+        name: state.productname,
+        price: state.price,
+        categoryId: state.categoryId,
+      })
       .then((response) => {
         toast.success("Update thành công");
         getAllProduct();
@@ -182,61 +205,86 @@ function ProductManager() {
   };
   return (
     <div className="product-manager ">
-      <div className="form-create-product">
-        <div>
-          <input
-            placeholder="Tên sản phẩm"
-            className="form__field"
-            value={state.productname}
-            name="productname"
-            type="text"
-            id="product"
-            onChange={(e) => {
-              onChangeValue(e);
-            }}
-          />
-        </div>
-        <div className="select-category">
-          <select
-            value={state.categoryId}
-            name="categoryId"
-            id=""
-            onChange={(e) => {
-              onChangeValue(e);
-            }}
-          >
-            <option value="">Danh mục</option>
-            {listcategory &&
-              listcategory.length > 0 &&
-              listcategory.map((item) => (
-                <option value={item._id} key={item._id}>
-                  {item.categoryName}
-                </option>
-              ))}
-          </select>
-        </div>
-        <div>
-          <input
-            className="form__field select-price"
-            value={state.price}
-            name="price"
-            type="number"
-            id="price"
-            placeholder="VNĐ"
-            onChange={(e) => {
-              onChangeValue(e);
-            }}
-          />
-        </div>
-
-        <button
-          onClick={() => {
-            handleCreateNewProduct();
-          }}
-        >
-          Thêm mới
-        </button>
+      <div className="add-new-product">
+        <span>Thêm mới sản phẩm</span>
+        <PlusOutlined onClick={hanleAddProduct} />
       </div>
+
+      {showForm && (
+        <div className="form-create-product">
+          <Form
+            labelCol={{
+              span: 4,
+            }}
+            wrapperCol={{
+              span: 14,
+            }}
+            layout="horizontal"
+          >
+            <Form.Item label="Input">
+              <Input
+                placeholder="Tên sản phẩm"
+                value={state.productname}
+                name="productname"
+                type="text"
+                id="product"
+                onChange={(e) => {
+                  onChangeValue(e);
+                }}
+              />
+            </Form.Item>
+            <Form.Item label="Select">
+              <Select
+                value={state.categoryId}
+                options={listcategory.map((item) => ({
+                  value: item._id,
+                  label: item.categoryName,
+                  disabled: item.enable === true ? false : true,
+                }))}
+                onChange={onChangSelect}
+              ></Select>
+            </Form.Item>
+
+            <Form.Item label="Giá">
+              <Input
+                min={1}
+                value={state.price}
+                name="price"
+                type="number"
+                id="price"
+                placeholder="VNĐ"
+                onChange={(e) => {
+                  onChangeValue(e);
+                }}
+              />
+            </Form.Item>
+
+            <Form.Item label="Upload" valuePropName="fileList">
+              <Upload action="/upload.do" listType="picture-card">
+                <div>
+                  <PlusOutlined />
+                  <div
+                    style={{
+                      marginTop: 8,
+                    }}
+                  >
+                    Upload
+                  </div>
+                </div>
+              </Upload>
+            </Form.Item>
+
+            <Button
+              type="primary"
+              onClick={() => {
+                handleCreateNewProduct();
+              }}
+            >
+              Thêm mới
+            </Button>
+          </Form>
+        </div>
+      )}
 
       <Table
         className="customer-table"
@@ -275,7 +323,25 @@ function ProductManager() {
           placeholder="VNĐ"
           onChange={onChangeValue}
         />
+        <select
+          value={state.categoryId}
+          name="categoryId"
+          id=""
+          onChange={(e) => {
+            onChangeValue(e);
+          }}
+        >
+          <option value="">Danh mục</option>
+          {listcategory &&
+            listcategory.length > 0 &&
+            listcategory.map((item) => (
+              <option value={item._id} key={item._id}>
+                {item.categoryName}
+              </option>
+            ))}
+        </select>
       </Modal>
+      {/* <FormDisabledDemo /> */}
     </div>
   );
 }
