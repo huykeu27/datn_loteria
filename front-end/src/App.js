@@ -6,7 +6,6 @@ import "antd/dist/antd.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Home from "./page/user/homePage/Home";
-
 import Product from "./components/Product/Product";
 import Admin from "./page/admin/Admin";
 import Customers from "./components/Admin/customer/Customers";
@@ -21,18 +20,8 @@ import CartHome from "./page/user/cart/CartHome";
 function App() {
   return (
     <>
-      {/* <Header />
       <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/category" element={<Category />}></Route>
-        <Route path="/cart" element={<Cart />}></Route>
-        
-        <Route path="/account" element={<Account />}></Route>
-      </Routes>
-      <Footer /> */}
-
-      <Routes>
-        <Route path="/category/burger" element={<Product />}></Route>
+        <Route path="/category/:productId" element={<Product />}></Route>
         <Route path="/cart" element={<CartHome />}></Route>
         <Route path="/" element={<Home />}></Route>
         <Route path="/profile" element={<ProfileUser />}>

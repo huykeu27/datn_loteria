@@ -20,10 +20,12 @@ const Sidebar = (props) => {
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
-        <img
-          src="https://www.lotteria.vn/grs-static/images/lotteria_logo.svg"
-          alt="company logo"
-        />
+        <NavLink to="/">
+          <img
+            src="https://www.lotteria.vn/grs-static/images/lotteria_logo.svg"
+            alt="company logo"
+          />
+        </NavLink>
       </div>
       {sidebar_items.map((item, index) => (
         <NavLink to={item.route} key={index}>

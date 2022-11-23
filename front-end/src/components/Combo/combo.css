@@ -27,7 +27,7 @@
 .combo-item {
   max-width: 300px;
   border-radius: 10px;
-  box-shadow: 4px 1px 5px rgb(0 0 0 / 10%);
+  box-shadow: 0 0 15px rgb(0 0 0 / 10%);
 }
 .item-content {
   display: flex;
@@ -65,6 +65,7 @@
   color: #ff5b6a;
 }
 .combo-btn {
+  cursor: pointer;
   border: none;
   padding: 9px 12px;
   background-color: #ff5b6a;

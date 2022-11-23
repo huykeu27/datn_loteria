@@ -7,8 +7,9 @@ const UserSchema = mongoose.Schema(
     password: String,
     fullName: String,
     phoneNumber: Number,
-    birthDay: Date,
+    dateOfBirth: { type: Date, default: 1 / 1 / 1990 },
     address: [{ type: String }],
+    role: { type: String, default: "user" },
     token: [],
     status: { type: Boolean, default: true },
   },
@@ -17,9 +18,9 @@ const UserSchema = mongoose.Schema(
 
 const User = mongoose.model("user", UserSchema);
 // User.create({
-//   email: "huyph2711@gmail.com",
-//   password: "123",
-//   fullName: "pham quoc huy",
+//   email: "user",
+//   password: "user",
+//   fullName: "user",
 // })
 //   .then((data) => {
 //     console.log(data);

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Category = require("../models/Category");
 const multer = require("multer");
+
 let fs = require("fs");
 //upload
 const storage = multer.diskStorage({
@@ -22,43 +23,38 @@ router.get("/get-all-category", (req, res) => {
     .then((listCategories) => res.json({ listCategories }))
     .catch((err) => res.json({ err }));
 });
-//create category
+
 router.post(
   "/create-category",
-  upload.single("img-cat"),
-  (req, res, next) => {
-    if (!req.body.categoryName) {
-      return res.status(400).json({ message: "Categoryname null", errcode: 1 });
-    }
-    return next();
-  },
-
+  upload.single("categorythump"),
   async (req, res) => {
-    if (!req.file) {
-      return res.status(400).json({ message: "khong co img", errcode: 1 });
-    }
     try {
-      let data = await Category.findOne({
-        categoryName: req.body.categoryName,
-      });
-      if (data) {
-        return res.status(400).json({ message: "Already exist", errcode: 2 });
+      console.log(72, req.file);
+      console.log(71, req.body.categoryName);
+
+      if (!req.body.categoryName || !req.file) {
+        return res.status(400).json({ message: "Value null", errcode: 1 });
       } else {
-        // let serverName = require("os").hostname();
-        // console.log(serverName);
-        console.log(req.file);
-        let newcategory = await Category.create({
+        let data = await Category.findOne({
           categoryName: req.body.categoryName,
-          imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.body.file.name}`,
         });
-        res.status(200).json({
-          newcategory,
-          message: "Create category success",
-          errcode: 0,
-        });
+
+        if (data) {
+          return res.status(400).json({ message: "Already exist", errcode: 2 });
+        } else {
+          let newcategory = await Category.create({
+            categoryName: req.body.categoryName,
+            imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.file.filename}`,
+          });
+          res.status(200).json({
+            newcategory,
+            message: "Create category success",
+            errcode: 0,
+          });
+        }
       }
     } catch (error) {
-      res.json(error);
+      res.status(404).json(error);
     }
   }
 );
@@ -74,32 +70,40 @@ router.get("/get-category-by-id/:id", async (req, res) => {
 });
 
 //update
-router.put("/update-category/:id", async (req, res) => {
-  try {
-    const category = await Category.findOne({ _id: req.params.id });
-    if (category) {
-      if (!req.body.categoryName) {
-        return res.status(400).json({ errcode: 1, message: "Value null" });
-      } else {
-        let check = await Category.findOne({
-          categoryName: req.body.categoryName,
-          enable: req.body.enable,
-        });
-        if (check) {
-          return res.status(400).json({ errcode: 2, message: "Already exist" });
+router.put(
+  "/update-category/:id",
+  upload.single("categorythump"),
+  async (req, res) => {
+    try {
+      const category = await Category.findOne({ _id: req.params.id });
+      if (category) {
+        if (!req.body.categoryName) {
+          return res.status(400).json({ errcode: 1, message: "Value null" });
         } else {
-          let update = await category.update({
+          let check = await Category.findOne({
             categoryName: req.body.categoryName,
             enable: req.body.enable,
+            imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.file.filename}`,
           });
-          res.status(200).json(update);
+          if (check) {
+            return res
+              .status(400)
+              .json({ errcode: 2, message: "Already exist" });
+          } else {
+            let update = await category.update({
+              categoryName: req.body.categoryName,
+              imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.file.filename}`,
+              enable: req.body.enable,
+            });
+            res.status(200).json(update);
+          }
         }
       }
+    } catch (error) {
+      res.status(400).json({ error });
     }
-  } catch (error) {
-    res.status(400).json({ error });
   }
-});
+);
 //delete category
 router.delete("/delete-category/:id", async (req, res) => {
   try {

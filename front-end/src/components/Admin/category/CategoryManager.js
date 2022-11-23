@@ -23,7 +23,8 @@ function CategoryManager() {
   const [state, setState] = useState({
     id: "",
     categoryName: "",
-    image: {},
+    categorythump: "",
+    imageUrl: "",
     enable: true,
   });
 
@@ -137,33 +138,25 @@ function CategoryManager() {
   const onChangeSwitch = (checked) => {
     setState({ ...state, enable: checked });
   };
-  const onChangeUpload = (e) => {
-    console.log(e.file);
-    setState({ ...state, image: e.file });
-  };
 
-  const handleCreateNewCategory = async () => {
-    const url = "/category/create-category";
-    // var formData = new FormData().append("img-cat");
+  const handleCreateNewCategory = () => {
+    let url = "/category/create-category";
+    const form = document.querySelector(".form-create");
+    const formData = new FormData(form);
+    formData.append("categoryName", state.categoryName);
 
-    await axios
-      .post(
-        url,
-        {
-          categoryName: state.categoryName,
-          file: state.image,
-        }
-        // {
-        //   headers: { "Content-Type": "multipart/form-data" },
-        //   processData: false,
-        //   contentType: false,
-        // }
-      )
-      .then(function (response) {
-        setState({ ...state, categoryName: "", image: {} });
+    axios
+      .post(url, formData, {
+        headers: {
+          "Content-Type": `multipart/form-data; boundary=${form._boundary}`,
+        },
+      })
+      .then((response) => {
+        console.log(response);
+        setState({ ...state, categoryName: "", categorythump: "" });
         toast.success("Thêm danh mục thành công");
       })
-      .catch(function (err) {
+      .catch((err) => {
         if (err.response.data.errcode === 1) {
           toast.warning("Điền đầy đủ thông tin");
         } else if (err.response.data.errcode === 2) {
@@ -183,16 +176,24 @@ function CategoryManager() {
         getAllCategory();
         console.log(response);
       })
-      .catch(function (err) {
+      .catch((err) => {
         console.log(err);
+        if (err.response.data.errcode === 1) {
+          toast.warning("Điền đầy đủ thông tin");
+        } else if (err.response.data.errcode === 2) {
+          toast.error("Danh mục đã tồn tại");
+        }
       });
   };
 
   const handleUpdateCategory = async () => {
     const url = `/category/update-category/${state.id}`;
-
+    const form = document.querySelector(".form-update");
+    const formData = new FormData(form);
+    formData.append("categoryName", state.categoryName);
+    formData.append("enable", state.enable);
     await axios
-      .put(url, { categoryName: state.categoryName, enable: state.enable })
+      .put(url, formData)
       .then((response) => {
         toast.success("Update thành công");
         getAllCategory();
@@ -235,36 +236,27 @@ function CategoryManager() {
                 onChange={onchangeInput}
               />
             </Form.Item>
-
-            <Form.Item label="Upload" valuePropName="fileList">
-              {/* <Upload action={} listType="picture-card" onChange={onChangeUpload}>
-                <div>
-                  <PlusOutlined />
-                  Upload
-                </div>
-              </Upload> */}
-              <Upload
-                listType="picture-card"
-                maxCount={1}
-                onChange={onChangeUpload}
-              >
-                <div>
-                  <PlusOutlined />
-                  Upload
-                </div>
-              </Upload>
-            </Form.Item>
-            <Form.Item>
-              <Button
-                type="primary"
-                onClick={() => {
-                  handleCreateNewCategory();
-                }}
-              >
-                Thêm mới
-              </Button>
-            </Form.Item>
           </Form>
+          <form
+            action="/stats"
+            // enctype="multipart/form-data"
+            method="post"
+            className="form-create"
+          >
+            <input
+              type="file"
+              className="form-control-file"
+              name="categorythump"
+            />
+          </form>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleCreateNewCategory();
+            }}
+          >
+            Thêm mới
+          </Button>
         </div>
       )}
 
@@ -315,24 +307,22 @@ function CategoryManager() {
               />
             </Form.Item>
 
-            <Form.Item label="Upload" valuePropName="fileList">
-              <Upload action="/upload.do" listType="picture-card">
-                <div>
-                  <PlusOutlined />
-                  <div
-                    style={{
-                      marginTop: 8,
-                    }}
-                  >
-                    Upload
-                  </div>
-                </div>
-              </Upload>
-            </Form.Item>
             <Form.Item label="Trạng thái">
               <Switch checked={state.enable} onChange={onChangeSwitch} />
             </Form.Item>
           </Form>
+          <form
+            action="/stats"
+            // enctype="multipart/form-data"
+            method="post"
+            className="form-update"
+          >
+            <input
+              type="file"
+              className="form-control-file"
+              name="categorythump"
+            />
+          </form>
         </Modal>
       </>
     </div>

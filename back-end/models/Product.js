@@ -16,22 +16,21 @@ const ProductSchema = mongoose.Schema(
       require: [true, "Please Enter product price"],
       default: 0,
     },
-    image: {
-      type: Buffer,
+    imageUrl: {
+      type: String,
       require: [true, "Please Enter product image"],
       default: "12ew",
+    },
+    quantity: {
+      type: Number,
+      default: 1,
     },
   },
   { timestamps: true },
   { collection: "product" }
 );
 const Product = mongoose.model("product", ProductSchema);
-// Product.create({
-//   name: "Gà HS",
-//   categoryId: "6360d728bd49e85fce8d84f1",
-//   price: 56000,
-//   image:
-//     "https://dscnnwjxnwl3f.cloudfront.net/media/catalog/product/5/3/534x374px_hs-1.png",
+// Product.updateMany({
 // })
 //   .then((data) => {
 //     console.log(data);

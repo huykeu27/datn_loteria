@@ -2,6 +2,20 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/Product");
 const Category = require("../models/Category");
+const multer = require("multer");
+//upload
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    //Xu li save file
+    cb(null, "./public/imagesProduct");
+  },
+  filename: function (req, file, cb) {
+    //update ten file
+    const uniqueSuffix = "loteria" + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `${uniqueSuffix}_${file.originalname}`);
+  },
+});
+const upload = multer({ storage: storage });
 //get all product
 router.get("/get-all-product", (req, res) => {
   Product.find()
@@ -10,31 +24,45 @@ router.get("/get-all-product", (req, res) => {
     .catch((err) => res.json({ err }));
 });
 //create product
-router.post("/create-product/", async (req, res) => {
-  try {
-    if (!req.body.name || !req.body.categoryId || req.body.price === 0) {
-      return res.status(400).json({ message: "Value null", errCode: 1 });
-    } else {
-      let data = await Product.findOne({
-        name: req.body.name,
-        categoryId: req.body.categoryId,
-      });
-      if (data)
-        return res
-          .status(400)
-          .json({ message: "Wrong product name", errCode: 2 });
-      let product = await Product.create({
-        name: req.body.name,
-        categoryId: req.body.categoryId,
-        price: req.body.price,
-        image: req.body.image,
-      });
-      res.status(200).json({ product });
+router.post(
+  "/create-product/",
+  upload.single("productThump"),
+  async (req, res) => {
+    try {
+      if (
+        !req.body.name ||
+        !req.body.categoryId ||
+        req.body.price === 0 ||
+        !req.file
+      ) {
+        return res.status(400).json({ message: "Value null", errCode: 1 });
+      } else {
+        let data = await Product.findOne({
+          name: req.body.name,
+          categoryId: req.body.categoryId,
+        });
+        if (data)
+          return res
+            .status(400)
+            .json({ message: "Wrong product name", errCode: 2 });
+        let newproduct = await Product.create({
+          name: req.body.name,
+          categoryId: req.body.categoryId,
+          price: req.body.price,
+          imageUrl: `${process.env.SERVER_NAME}/public/imagesProduct/${req.file.filename}`,
+        });
+
+        res.status(200).json({
+          newproduct,
+          message: "Create product success",
+          errcode: 0,
+        });
+      }
+    } catch (error) {
+      res.json(error);
     }
-  } catch (error) {
-    res.json(error);
   }
-});
+);
 //get product by id
 router.get("/get-one-product/:id", async (req, res) => {
   try {
@@ -50,9 +78,10 @@ router.get("/get-one-product/:id", async (req, res) => {
 //get product by categoryId
 router.get("/get-product-by-category/:id", async (req, res) => {
   try {
-    let product = await Product.find({ categoryId: req.params.id })
-      .populate({ path: "brandId" })
-      .populate({ path: "categoryId" });
+    console.log(req.params.id);
+    let product = await Product.find({ categoryId: req.params.id }).populate({
+      path: "categoryId",
+    });
     if (product.length === 0)
       return res.json({ message: "No products under this category" });
     res.json({ product });
@@ -114,6 +143,18 @@ router.put("/update-product/:id", async (req, res) => {
     }
   } catch (error) {
     res.status(400).json({ error });
+  }
+});
+
+//get combo
+router.get("/combo", async (req, res) => {
+  try {
+    let comboList = await Product.find({
+      categoryId: "637e000881ae5a049f26b6c8",
+    });
+    res.json(comboList);
+  } catch (error) {
+    res.json(error);
   }
 });
 module.exports = router;

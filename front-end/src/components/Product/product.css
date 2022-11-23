@@ -1,5 +1,4 @@
 .productsList {
-  padding-top: 100px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -40,4 +39,23 @@
 }
 .product button:hover {
   background: linear-gradient(rgb(130, 140, 213), rgb(211, 83, 83));
+}
+.three {
+  padding-left: 16px;
+}
+.three h1 p {
+  font-size: 28px;
+  display: block;
+  float: left;
+  color: #ff5b6a;
+  font-weight: 700;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  -webkit-box-shadow: 0 1px 4px rgb(0 0 0 / 15%);
+  -webkit-border-radius: 40px;
+  -moz-border-radius: 40px;
+  border-radius: 40px;
+
+  padding: 5px 15px;
+  margin-top: 13px;
 }

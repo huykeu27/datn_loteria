@@ -111,13 +111,33 @@ router.get("/get-self-info", async (req, res) => {
   }
 });
 //remove user
-
 router.delete("/remove-user/:id", async (req, res) => {
   try {
     let user = await User.findOne({ _id: req.params.id });
     if (user) {
       await user.remove();
       res.json("success");
+    }
+  } catch (error) {
+    res.json({ error });
+  }
+});
+//get user by id
+////api/category/:id
+
+router.get("/info", async (req, res) => {
+  try {
+    // let data = authService.checkToken(req.cookies.token);
+    let data = jwt.verify(req.cookies.user, "huy");
+    // console.log(data);
+    // res.json(data);
+    if (data.email) {
+      let user = await User.findOne({ email: data.email }).select("-password");
+      if (user) {
+        res.status(200).json({ user, errcode: 0 });
+      }
+    } else {
+      return res.status(400).json({ message: "Not found" });
     }
   } catch (error) {
     res.json({ error });

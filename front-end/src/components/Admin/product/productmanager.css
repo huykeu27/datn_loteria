@@ -36,3 +36,8 @@
 .add-new-product span {
   margin-right: 5px;
 }
+.select_category {
+  width: 100%;
+  height: 32px;
+  border: 1px solid #d9d9d9;
+}

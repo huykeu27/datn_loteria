@@ -9,7 +9,7 @@ var indexRouter = require("./routes/indexRoute");
 var userRouter = require("./routes/userRoute");
 var productRouter = require("./routes/productRoute");
 var categoryRouter = require("./routes/categoryRoute");
-
+const formidableMiddleware = require("express-formidable");
 const cors = require("cors");
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -19,7 +19,7 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 // app.use(express.static(path.join(__dirname, "public")));
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 // app.use('/users', usersRouter);

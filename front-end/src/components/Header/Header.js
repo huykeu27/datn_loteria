@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../Header/header.css";
-import { Modal } from "antd";
+import { Modal, AutoComplete } from "antd";
 import axios from "../../config/axios";
 import { toast } from "react-toastify";
 
@@ -13,18 +13,53 @@ function Header() {
     let expires = "expires=" + d.toUTCString();
     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
   }
+
+  function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(";");
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) == " ") {
+        c = c.substring(1);
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length);
+      }
+    }
+    return "";
+  }
+  const navigate = useNavigate();
   const selector = useSelector((state) => state);
+  const dispath = useDispatch();
+  const userinfo = selector.userinfo;
   const cartProducts = selector.cartProducts;
   const [isOpenLoginForm, setIsOpenLoginForm] = useState(true);
   const [isOpenRegisterForm, setIsOpenRegisterForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [token, setToken] = useState("");
-  const [account, setAccount] = useState({ email: "", password: "" });
+  const [account, setAccount] = useState({
+    fullname: "",
+    email: "",
+    address: "",
+  });
   const [newaccount, setNewAccount] = useState({
     fullname: "",
     email: "",
     password: "",
   });
+  // const options = [
+  //   {
+  //     value: "Burns Bay Road",
+  //   },
+  //   {
+  //     value: "Downing Street",
+  //   },
+  //   {
+  //     value: "Wall Street",
+  //   },
+  // ];
+
   const { fullname, email, password } = newaccount;
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
@@ -66,16 +101,22 @@ function Header() {
         password: account.password,
       })
       .then((response) => {
+        console.log(response.data.data.role);
+        if (response.data.data.role === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
         setCookie("user", response.data.data.accessToken, 1);
+
         if (response.data.errcode === 0) {
           toast.success("Đăng nhập thành công ", {
             theme: "colored",
           });
+
           setToken(response.data.data.accessToken);
           setIsModalOpen(false);
         }
-
-        console.log(response.data.data.accessToken);
       })
       .catch((err) => {
         if (err.response.data.errcode === 1) {
@@ -88,6 +129,12 @@ function Header() {
           });
         }
       });
+    await axios
+      .get("/user/info")
+      .then((data) => {
+        // console.log(data);
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleRegister = async () => {
@@ -115,7 +162,7 @@ function Header() {
       });
   };
   useEffect(() => {
-    // getlistProduct();
+    checkLogin();
   }, [account]);
 
   const handleOpenLoginForm = () => {
@@ -127,6 +174,24 @@ function Header() {
     setIsOpenLoginForm(false);
     setIsOpenRegisterForm(true);
   };
+
+  function checkLogin() {
+    let token = getCookie("user");
+    setToken(token);
+  }
+
+  // const getInfoUser = () => {
+  //   const url = "/user/info";
+  //   axios
+  //     .get(url)
+  //     .then((response) => {
+  //       console.log(response);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
+
   return (
     <div>
       <header className={isScrolled ? "header-scroll" : "header"}>
@@ -138,40 +203,66 @@ function Header() {
           />
         </NavLink>
         <form className="search">
-          <input type="text" placeholder="search" />
-          <button>Accept</button>
+          <input type="text" placeholder="Tìm kiếm sản phẩm" />
+          {/* <AutoComplete
+            style={{
+              width: 200,
+            }}
+            options={options}
+            placeholder="Tìm kiếm sản phẩm"
+            filterOption={(inputValue, option) =>
+              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
+              -1
+            }
+          /> */}
+          <button>Tìm kiếm</button>
         </form>
-        <div className="header-right">
+        <ul className="account-menu">
           {token && token !== "" ? (
-            <NavLink to="/profile">
-              <div className="account">
+            <li>
+              <NavLink to="/profile">
+                <span className="icon">
+                  <img
+                    src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
+                    alt=""
+                  />
+                </span>
+              </NavLink>
+            </li>
+          ) : (
+            <li>
+              <NavLink>
+                <span className="icon" onClick={showModal}>
+                  <img
+                    src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
+                    alt=""
+                  />
+                </span>
+              </NavLink>
+            </li>
+          )}
+
+          <li>
+            <span className="icon">
+              <img
+                src="https://www.lotteria.vn/grs-static/images/icon-pos-2.svg"
+                alt=""
+              />
+            </span>
+          </li>
+          <li>
+            <NavLink to="/cart">
+              <span className="icon">
                 <img
-                  src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
+                  src="https://www.lotteria.vn/grs-static/images/icon-cart.svg"
                   alt=""
                 />
-              </div>
+              </span>
+              <span className="number">{cartProducts.length}</span>
             </NavLink>
-          ) : (
-            <div className="account" onClick={showModal}>
-              <img
-                src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
-                alt=""
-              />
-            </div>
-          )}
-          <div className="cartLink">
-            <NavLink to="/cart">
-              <img
-                src="https://www.lotteria.vn/grs-static/images/icon-cart.svg"
-                alt=""
-              />
-            </NavLink>
-            <span>{cartProducts.length}</span>
-          </div>
-        </div>
-
+          </li>
+        </ul>
         <Modal
-          // title="Đăng nhập hoặc tạo tài khoản"
           width={800}
           open={isModalOpen}
           onOk={handleOk}

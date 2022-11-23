@@ -2,11 +2,9 @@ import React, { useEffect } from "react";
 import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
-
 import "./productmanager.css";
 import { Table, Modal, Form, Input, Select, Button, Upload } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import FormDisabledDemo from "./FormDisabledDemo";
 
 function ProductManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +16,7 @@ function ProductManager() {
     productname: "",
     categoryId: "",
     price: "",
+    patchImage: "",
   });
 
   const columns = [
@@ -32,6 +31,18 @@ function ProductManager() {
     {
       title: "Giá",
       dataIndex: "price",
+      defaultSortOrder: "descend",
+      sorter: (a, b) => a.price - b.price,
+    },
+    {
+      title: "Ảnh sản phẩm",
+      render: (record) => {
+        return (
+          <>
+            <img src={record.imageUrl} alt="" width={80} height={60} />
+          </>
+        );
+      },
     },
     {
       title: "Ngày phát hành",
@@ -41,9 +52,18 @@ function ProductManager() {
       title: "Ngày cập nhật",
       dataIndex: "updatedAt",
     },
+
     {
       title: "Danh mục",
       dataIndex: ["categoryId", "categoryName"],
+      filters: listcategory.map((item) => {
+        return {
+          text: item.categoryName,
+          value: item.categoryName,
+        };
+      }),
+      onFilter: (value, record) =>
+        record.categoryId.categoryName.indexOf(value) === 0,
     },
     {
       title: "Hành động",
@@ -133,19 +153,24 @@ function ProductManager() {
   };
   const handleCreateNewProduct = async () => {
     const url = "/product/create-product";
+    const form = document.querySelector(".form-create");
+    const formData = new FormData(form);
+    formData.append("name", state.productname);
+    formData.append("categoryId", state.categoryId);
+    formData.append("price", state.price);
     await axios
-      .post(url, {
-        name: state.productname,
-        categoryId: state.categoryId,
-        price: state.price,
-      })
+      .post(url, formData)
       .then(function (response) {
-        if (response.data.product) {
-          setState({ ...state, productname: "", categoryId: "", price: 0 });
-          toast.success("Thêm sản phẩm thành công", {
-            theme: "colored",
-          });
-        }
+        setState({
+          ...state,
+          productname: "",
+          categoryId: "",
+          price: 0,
+        });
+        getAllProduct();
+        toast.success("Thêm sản phẩm thành công", {
+          theme: "colored",
+        });
       })
       .catch(function (error) {
         if (error.response.data.errCode === 1) {
@@ -221,7 +246,7 @@ function ProductManager() {
             }}
             layout="horizontal"
           >
-            <Form.Item label="Input">
+            <Form.Item label="Tên sản phẩm">
               <Input
                 placeholder="Tên sản phẩm"
                 value={state.productname}
@@ -233,7 +258,7 @@ function ProductManager() {
                 }}
               />
             </Form.Item>
-            <Form.Item label="Select">
+            <Form.Item label="Chọn danh mục">
               <Select
                 value={state.categoryId}
                 options={listcategory.map((item) => ({
@@ -259,7 +284,7 @@ function ProductManager() {
               />
             </Form.Item>
 
-            <Form.Item label="Upload" valuePropName="fileList">
+            {/* <Form.Item label="Upload" valuePropName="fileList">
               <Upload action="/upload.do" listType="picture-card">
                 <div>
                   <PlusOutlined />
@@ -272,8 +297,21 @@ function ProductManager() {
                   </div>
                 </div>
               </Upload>
+            </Form.Item> */}
+            <Form.Item label="Ảnh">
+              <form
+                action="/stats"
+                enctype="multipart/form-data"
+                method="post"
+                className="form-create"
+              >
+                <input
+                  type="file"
+                  className="form-control-file"
+                  name="productThump"
+                />
+              </form>
             </Form.Item>
-
             <Button
               type="primary"
               onClick={() => {
@@ -303,43 +341,73 @@ function ProductManager() {
         onOk={handleUpdateProduct}
         onCancel={handleCancel}
       >
-        <span>ID</span>
-        <input value={state.id} type="text" id="idproduct" disabled />
-        <br />
-        <span>Tên sản phẩm</span>
-        <input
-          value={state.productname}
-          name="productname"
-          type="text"
-          id="product-name"
-          onChange={onChangeValue}
-        />
-        <span>Giá</span>
-        <input
-          value={state.price}
-          name="price"
-          type="text"
-          id="product-price"
-          placeholder="VNĐ"
-          onChange={onChangeValue}
-        />
-        <select
-          value={state.categoryId}
-          name="categoryId"
-          id=""
-          onChange={(e) => {
-            onChangeValue(e);
+        <Form
+          labelCol={{
+            span: 4,
           }}
+          wrapperCol={{
+            span: 14,
+          }}
+          layout="horizontal"
         >
-          <option value="">Danh mục</option>
-          {listcategory &&
-            listcategory.length > 0 &&
-            listcategory.map((item) => (
-              <option value={item._id} key={item._id}>
-                {item.categoryName}
+          <Form.Item label="ID">
+            <Input value={state.id} type="text" id="product" disabled></Input>
+          </Form.Item>
+          <Form.Item label="Tên sản phẩm">
+            <Input
+              value={state.productname}
+              name="productname"
+              type="text"
+              id="product-name"
+              onChange={onChangeValue}
+            />
+          </Form.Item>
+          <Form.Item label="Giá">
+            <Input
+              value={state.price}
+              name="price"
+              type="text"
+              id="product-price"
+              placeholder="VNĐ"
+              onChange={onChangeValue}
+            />
+          </Form.Item>
+          <Form.Item label="Danh mục">
+            <select
+              value={state.categoryId}
+              name="categoryId"
+              className="select_category"
+              onChange={(e) => {
+                onChangeValue(e);
+              }}
+            >
+              <option value="" disabled>
+                Danh mục
               </option>
-            ))}
-        </select>
+              {listcategory &&
+                listcategory.length > 0 &&
+                listcategory.map((item) => (
+                  <option value={item._id} key={item._id}>
+                    {item.categoryName}
+                  </option>
+                ))}
+            </select>
+          </Form.Item>
+          <Form.Item label="Upload" valuePropName="fileList">
+            <form
+              action="/stats"
+              enctype="multipart/form-data"
+              method="post"
+              className="form-update"
+            >
+              <input
+                type="file"
+                class="form-control-file"
+                name="categorythump"
+              />
+            </form>
+          </Form.Item>
+        </Form>
       </Modal>
       {/* <FormDisabledDemo /> */}
     </div>

@@ -1,6 +1,7 @@
 var User = require("../models/User");
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
+
 exports.checkLogin = async (email, password) => {
   var userFind = await User.findOne({
     email: email,
@@ -13,16 +14,28 @@ exports.checkLogin = async (email, password) => {
         {
           email: userFind.email,
         },
-        "huy"
+        "huy",
+        { expiresIn: 3000 }
       );
       return {
         id: userFind._id,
         email: userFind.email,
+        fullName: userFind.fullName,
+        address: userFind.address,
         accessToken: accessToken,
+        role: userFind.role,
       };
-    } else {
-      console.log(1);
     }
+  } else {
+    return null;
+  }
+};
+
+exports.checkToken = async (accessToken) => {
+  let user = jwt.verify(accessToken, "huy");
+  console.log(user);
+  if (user) {
+    return { user };
   } else {
     return null;
   }
