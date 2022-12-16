@@ -1,33 +1,23 @@
 [
   {
     "display_name": "Dashboard",
-    "route": "/admin/",
-    "icon": "bx bx-category-alt"
+    "route": "/admin/"
   },
   {
     "display_name": "Customers",
-    "route": "/admin/customers",
-    "icon": "bx bx-user-pin"
+    "route": "/admin/customers"
   },
   {
     "display_name": "Products",
-    "route": "/admin/products",
-    "icon": "bx bx-package"
+    "route": "/admin/products"
   },
   {
     "display_name": "Orders",
-    "route": "/admin/orders",
-    "icon": "bx bx-cart"
+    "route": "/admin/orders"
   },
 
   {
     "display_name": "categories",
-    "route": "/admin/categories",
-    "icon": "bx bx-list-ol"
-  },
-  {
-    "display_name": "discount",
-    "route": "/admin/discount",
-    "icon": "bx bx-gift"
+    "route": "/admin/categories"
   }
 ]

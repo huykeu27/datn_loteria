@@ -21,10 +21,6 @@ const ProductSchema = mongoose.Schema(
       require: [true, "Please Enter product image"],
       default: "12ew",
     },
-    quantity: {
-      type: Number,
-      default: 1,
-    },
   },
   { timestamps: true },
   { collection: "product" }

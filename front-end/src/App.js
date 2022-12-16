@@ -13,10 +13,14 @@ import CategoryManager from "./components/Admin/category/CategoryManager";
 import ProductManager from "./components/Admin/product/ProductManager";
 import ProfileUser from "./page/user/profile/ProfileUser";
 import Address from "./components/User/Address";
-import Order from "./components/User/Order";
+import Order from "./components/User/Order/Order";
 import Info from "./components/User/Info";
 
 import CartHome from "./page/user/cart/CartHome";
+import Payment from "./page/user/pay/Payment";
+import OrderWait from "./components/User/Order/OrderWait";
+import OrderSuccess from "./components/User/Order/OrderSuccess";
+import OrderManager from "./components/Admin/order/OrderManager";
 function App() {
   return (
     <>
@@ -25,25 +29,19 @@ function App() {
         <Route path="/cart" element={<CartHome />}></Route>
         <Route path="/" element={<Home />}></Route>
         <Route path="/profile" element={<ProfileUser />}>
-          <Route
-            path="/profile"
-            element={<Info />}
-            errorElement={<h1>Error 404</h1>}
-          />
+          <Route path="/profile" element={<Info />} />
           <Route path="address" element={<Address />} />
-          <Route path="order" element={<Order />} />
+          <Route path="order" element={<Order />}>
+            <Route path="waiting" element={<OrderWait />} />
+            <Route path="success" element={<OrderSuccess />} />
+          </Route>
         </Route>
-        <Route
-          path="/admin"
-          element={
-            // <PrivateRouteShop sigin={"/sign-in-admin"}>
-            <Admin />
-            // </PrivateRouteShop>
-          }
-        >
-          <Route path="/admin/customers" element={<Customers />} />
-          <Route path="/admin/categories" element={<CategoryManager />} />
-          <Route path="/admin/products" element={<ProductManager />} />
+        <Route path="/checkout/cart" element={<Payment />}></Route>
+        <Route path="/admin" element={<Admin />}>
+          <Route path="customers" element={<Customers />} />
+          <Route path="categories" element={<CategoryManager />} />
+          <Route path="products" element={<ProductManager />} />
+          <Route path="orders" element={<OrderManager />} />
         </Route>
       </Routes>
     </>

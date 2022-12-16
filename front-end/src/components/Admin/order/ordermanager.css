@@ -1,0 +1,10 @@
+.orders {
+  margin-left: 300px;
+  margin-top: 50px;
+}
+.order-table {
+  margin: 50px;
+  padding: 12px;
+  border: 2px solid #c47135;
+  border-radius: 8px;
+}

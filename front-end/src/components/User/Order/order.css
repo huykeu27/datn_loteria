@@ -1,0 +1,9 @@
+.tab-account {
+  display: flex;
+  padding: 0 50px;
+  justify-content: space-around;
+  border-bottom: 1px solid #ff9ea2;
+}
+.order_item {
+  display: flex;
+}

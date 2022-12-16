@@ -6,11 +6,11 @@ const UserSchema = mongoose.Schema(
     email: String,
     password: String,
     fullName: String,
-    phoneNumber: Number,
+    phoneNumber: { type: Number, default: 0 },
     dateOfBirth: { type: Date, default: 1 / 1 / 1990 },
     address: [{ type: String }],
     role: { type: String, default: "user" },
-    token: [],
+    token: { type: String, default: "" },
     status: { type: Boolean, default: true },
   },
   { collection: "user" }

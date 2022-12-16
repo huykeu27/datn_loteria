@@ -15,7 +15,17 @@ const SidebarItem = (props) => {
     </div>
   );
 };
-
+function clearCookies() {
+  alert("Đăng xuất à???");
+  var cookies = document.cookie.split(";");
+  for (var i = 0; i < cookies.length; i++) {
+    var cookie = cookies[i];
+    var eqPos = cookie.indexOf("=");
+    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+  }
+  localStorage.removeItem("role");
+}
 const Sidebar = (props) => {
   return (
     <div className="sidebar">
@@ -32,6 +42,9 @@ const Sidebar = (props) => {
           <SidebarItem title={item.display_name} />
         </NavLink>
       ))}
+      <NavLink to={"/"} onClick={clearCookies}>
+        <SidebarItem title="Log out" />
+      </NavLink>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import "../Product/product.css";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, NavLink, useParams, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "../../config/axios";
 import { useState } from "react";
@@ -13,23 +13,24 @@ function Product() {
   const dispath = useDispatch();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState("");
-  const cartProducts = selector.cartProducts;
-  const { productId } = useParams();
 
+  const myCart = selector.myCart;
+  const userinfo = selector.userinfo;
+  const { productId } = useParams();
+  console.log(myCart);
   function addToCart(id) {
-    let isIncart = false;
-    cartProducts.forEach((el) => {
-      if (id === el._id) isIncart = true;
-    });
-    if (!isIncart) {
-      dispath({
-        type: "ADD_TO_CART",
-        payload: products.find((product) => id === product._id),
+    axios
+      .patch(`/api/cart/add-product/${userinfo.id}`, {
+        productId: id,
+      })
+      .then((response) => {
+        console.log(response);
+        alert("Product add to cart");
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    }
-    alert("Product add to cart");
   }
-  ///get-product-by-category/:id
 
   useEffect(() => {
     axios(`/product/get-product-by-category/${productId}`)
@@ -46,12 +47,15 @@ function Product() {
       .catch((error) => {
         console.log(error);
       });
-  }, [productId]);
+  }, [productId, myCart.productList]);
+
+  //get my cart
+
   return (
     <>
       <Header />
 
-      <div class="three">
+      <div className="three">
         <h1>
           <p>{category}</p>
         </h1>
@@ -66,6 +70,7 @@ function Product() {
               <span className="productPrice">
                 {item.price.toLocaleString()}đ
               </span>
+
               <button onClick={() => addToCart(item._id)}>
                 Thêm vào giỏ hàng
               </button>

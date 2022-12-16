@@ -80,22 +80,30 @@ router.put(
         if (!req.body.categoryName) {
           return res.status(400).json({ errcode: 1, message: "Value null" });
         } else {
-          let check = await Category.findOne({
-            categoryName: req.body.categoryName,
-            enable: req.body.enable,
-            imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.file.filename}`,
-          });
-          if (check) {
-            return res
-              .status(400)
-              .json({ errcode: 2, message: "Already exist" });
-          } else {
+          if (req.file) {
             let update = await category.update({
               categoryName: req.body.categoryName,
               imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.file.filename}`,
               enable: req.body.enable,
             });
             res.status(200).json(update);
+          } else {
+            let check = await Category.findOne({
+              categoryName: req.body.categoryName,
+              enable: req.body.enable,
+              // imageUrl: `${process.env.SERVER_NAME}/public/imagesCategory/${req.file.filename}`,
+            });
+            if (check) {
+              return res
+                .status(400)
+                .json({ errcode: 2, message: "Already exist" });
+            } else {
+              let update = await category.update({
+                categoryName: req.body.categoryName,
+                enable: req.body.enable,
+              });
+              res.status(200).json(update);
+            }
           }
         }
       }

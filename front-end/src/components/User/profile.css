@@ -11,7 +11,27 @@
   box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
   display: flex;
   width: 100%;
-  min-height: 485px;
+  height: 700px;
+}
+.f-name {
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 136px;
+  height: 136px;
+  margin: 0 auto 16px;
+  font-size: 50px;
+}
+.f-point span {
+  font-size: 16px !important;
+  display: inline-block;
+  text-transform: none;
+  font-weight: normal;
+  background: url(https://www.lotteria.vn/grs-static/images/icon-point.svg) 0 0
+    no-repeat;
+  padding: 0 0 0 30px;
 }
 .profile_menu {
   height: auto;
@@ -31,9 +51,10 @@
 }
 .profile_menu span {
   color: #ffffff;
+  font-size: 20px;
 }
 .account-content-right {
-  width: 70%;
+  width: 100%;
   padding-left: 10px;
 }
 .info-account {

@@ -7,7 +7,9 @@ function Combo() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
   // const products = selector.products;
-  const cartProducts = selector.cartProducts;
+  const myCart = selector.myCart;
+  const userinfo = selector.userinfo;
+
   const [products, setProducts] = useState([]);
   const settings = {
     dots: true,
@@ -22,7 +24,6 @@ function Combo() {
     await axios
       .get(url)
       .then((res) => {
-        console.log(res.data);
         setProducts(res.data);
       })
       .catch((err) => {
@@ -34,17 +35,17 @@ function Combo() {
   }, []);
 
   function addToCart(id) {
-    let quantity = false;
-    cartProducts.forEach((el) => {
-      if (id === el._id) quantity = true;
-    });
-    if (!quantity) {
-      dispath({
-        type: "ADD_TO_CART",
-        payload: products.find((product) => id === product._id),
+    axios
+      .patch(`/api/cart/add-product/${userinfo.id}`, {
+        productId: id,
+      })
+      .then((response) => {
+        console.log(response);
+        alert("Product add to cart");
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    }
-    alert("Đã thêm sản phẩm vào giỏ hàng");
   }
   return (
     <div className="combo-list">

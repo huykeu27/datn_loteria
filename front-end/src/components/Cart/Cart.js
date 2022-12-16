@@ -1,71 +1,116 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "../Cart/cart.css";
 import { useDispatch, useSelector } from "react-redux";
-
+import axios from "../../config/axios";
 import {
   CaretDownOutlined,
   CaretUpOutlined,
   CloseOutlined,
 } from "@ant-design/icons";
+import { Empty } from "antd";
+import { NavLink } from "react-router-dom";
 function Cart() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
-  const cartProducts = selector.cartProducts;
-  function removeItem(id) {
-    alert("Bạn có muốn xóa hết sản phẩm khỏi giỏ hàng");
-    dispath({ type: "REMOVE_FROM_CART", payload: id });
-  }
+  // const myCart = selector.myCart;
+  const userinfo = selector.userinfo;
+  const [myCart, setCart] = useState([]);
+  // const [CartId, setCartId] = useState("");
+  const getCart = async () => {
+    let info = localStorage.getItem("info");
+    if (info) {
+      const resp = await axios.get(`/api/cart/mycart/${JSON.parse(info).id}`);
+      setCart(resp.data.listProduct);
+      // setCartId(resp.data._id);
+      dispath({ type: "CART-ID", payload: resp.data._id });
+    }
+  };
+  useEffect(() => {
+    getCart();
+  }, []);
   function clearCart() {
-    alert("bạn có muốn xóa hết sản phẩm");
+    alert("Bạn có muốn xóa hết sản phẩm");
+
     dispath({ type: "CLEAR_CART", payload: "" });
   }
-  function incrementProduct(id) {
-    dispath({ type: "INCREMENT_PRODUCT", payload: { id, increment: 1 } });
+  const increase = async (id) => {
+    await axios.patch(`/api/cart/increase/${userinfo.id}`, {
+      productId: id,
+    });
+    getCart();
+  };
+  const decrement = async (id) => {
+    await axios.patch(`/api/cart/decrement/${userinfo.id}`, {
+      productId: id,
+    });
+    getCart();
+  };
+
+  function removeItem(productId) {
+    if (window.confirm("Product remove from cart") === true) {
+      axios
+        .patch(`/api/cart/${userinfo.id}`, { productId: productId })
+        .then((response) => {
+          console.log(response);
+          dispath({
+            type: "MY-CART",
+            payload: response.data.listProduct,
+          });
+          getCart();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
-  function decrementProduct(id, quantity) {
-    quantity <= 1
-      ? removeItem(id)
-      : dispath({ type: "DECREMENT_PRODUCT", payload: { id, increment: 1 } });
-  }
-  console.log(cartProducts);
   return (
     <div className="cart">
-      {cartProducts.length > 0 ? (
-        cartProducts.map((item, index) => (
+      {myCart && myCart.length > 0 ? (
+        myCart.map((item, index) => (
           <div className="cartItem" key={item._id}>
             <div className="cartItemImg">
-              <img src={item.imageUrl} alt="" />
+              <img src={item.productId.imageUrl} alt="" />
             </div>
             <div className="cartItemInfo">
-              <h3>{item.name}</h3>
+              <h3>{item.productId.name}</h3>
             </div>
             <div className="cartItemQuantity">
-              <span>{item.quantity}</span>
+              <span id={`quantity${item.productId._id}`}>{item.quantity}</span>
               <div className="group-btn">
                 <button
                   className="btn-updown"
-                  onClick={() => incrementProduct(item._id, item.quantity)}
+                  onClick={() => increase(item.productId._id)}
                 >
                   <CaretUpOutlined />
                 </button>
                 <button
                   className="btn-updown"
-                  onClick={() => decrementProduct(item._id, item.quantity)}
+                  onClick={() => decrement(item.productId._id)}
                 >
                   <CaretDownOutlined />
                 </button>
               </div>
             </div>
             <div className="cartItemPrice">
-              <h3>Giá: {item.price.toLocaleString()}đ</h3>
-              <h2 color="red">
-                Tổng: {(item.price * item.quantity).toLocaleString()}đ
+              <h3>
+                Giá:{" "}
+                {Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(item.productId.price)}
+              </h3>
+              <h2>
+                Thành tiền:{" "}
+                {Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(item.productId.price * item.quantity)}
               </h2>
             </div>
             <div className="removeCartItem">
               <button
                 className="btn-updown"
-                onClick={() => removeItem(item._id)}
+                onClick={() => removeItem(item.productId._id)}
               >
                 <CloseOutlined />
               </button>
@@ -73,11 +118,16 @@ function Cart() {
           </div>
         ))
       ) : (
-        <h2>Cart is empty</h2>
+        <Empty
+          description="Rất tiếc giỏ hàng bạn chưa có gì cả"
+          image="https://img.freepik.com/premium-vector/plastic-shopping-basket-doodle-style-sketch-illustration-hand-drawn-vector-shopping-cart_231873-7169.jpg?w=2000"
+        />
       )}
-      {cartProducts.length > 0 ? (
+      {myCart.length > 0 ? (
         <div>
-          <button className="pay">Thanh toán</button>
+          <NavLink to={"/checkout/cart"}>
+            <button className="pay">Thanh toán</button>
+          </NavLink>
           <button className="pay cancle " onClick={() => clearCart()}>
             Hủy bỏ
           </button>

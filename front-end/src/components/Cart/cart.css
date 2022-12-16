@@ -1,6 +1,8 @@
 .cart {
-  height: 500px;
+  min-height: 500px;
+  height: auto;
   margin: 50px 250px 100px 250px;
+  padding: 15px 0;
   border: 1px solid #cf961b;
   border-radius: 8px;
   display: flex;
@@ -47,6 +49,10 @@
 .cartItem img {
   width: 200px;
 }
+.cart_quantity {
+  border: none;
+  width: 30px;
+}
 .cartItem button img {
   width: 15px;
 }
@@ -74,4 +80,10 @@
 }
 .cancle:hover {
   background-color: rgb(194, 14, 14);
+}
+.ant-empty {
+  font-size: 25px;
+}
+.ant-empty-image {
+  height: 150px;
 }

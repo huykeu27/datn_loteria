@@ -6,60 +6,10 @@ import { createStore } from "redux";
 import { Provider } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import mainReducer from "./reducers/RootReducer";
 
 const defaultState = {
-  products: [
-    // {
-    //   id: "63568d2697be854e9d420439",
-    //   name: "Burger Gà Thượng Hạng",
-    //   img: "https://dscnnwjxnwl3f.cloudfront.net/media/catalog/product/b/u/burger-534x374px_chicken-burger_1.png",
-    //   price: 46000,
-    //   inCart: 1,
-    //   category: {
-    //     categoryName: "burger",
-    //   },
-    // },
-    // {
-    //   id: "63568d2697be854e9d420436",
-    //   name: "Burger Double Double",
-    //   img: "https://dscnnwjxnwl3f.cloudfront.net/media/catalog/product/b/u/burger-534x374px_ddouble-burger_1.png",
-    //   price: 59000,
-    //   inCart: 1,
-    //   category: {
-    //     categoryName: "burger",
-    //   },
-    // },
-    // {
-    //   id: "63568d2697be854e9d42043a",
-    //   name: "Burger Bulgogi",
-    //   img: "https://dscnnwjxnwl3f.cloudfront.net/media/catalog/product/b/u/burger-534x374px_bulgogi-burger_1.png",
-    //   price: 45000,
-    //   inCart: 1,
-    //   category: {
-    //     categoryName: "burger",
-    //   },
-    // },
-    // {
-    //   id: "63568d2697be854e9d420437",
-    //   name: "Burger Mozzarella",
-    //   img: "https://dscnnwjxnwl3f.cloudfront.net/media/catalog/product/b/u/burger-534x374px_mozzarella-burger_3.png",
-    //   price: 62000,
-    //   inCart: 1,
-    //   category: {
-    //     categoryName: "burger",
-    //   },
-    // },
-    // {
-    //   id: "63568d2697be854e9d420438",
-    //   name: "Burger Tôm",
-    //   img: "https://dscnnwjxnwl3f.cloudfront.net/media/catalog/product/b/u/burger-534x374px_shrimp-burger_1.png",
-    //   price: 46000,
-    //   inCart: 1,
-    //   category: {
-    //     categoryName: "burger",
-    //   },
-    // },
-  ],
+  products: [],
   cartProducts: [],
   categorys: [
     // {
@@ -134,29 +84,33 @@ const defaultState = {
     //     "https://www.lotteria.vn/media/catalog/tmp/category/BG-Menu-06_1.jpg",
     // },
   ],
+  myCart: [],
   combo: [{}],
   userinfo: {},
+  CartID: "",
 };
-// userLogin: function(state, action) {
-
-//   getCookie('tiki-user', JSON.stringify(action.payload))
-//   return action.payload;
-// },
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
     case "INFO-USER":
       return {
         ...state,
-        userinfo: window.localStorage.getItem(
-          "user",
-          JSON.stringify(action.payload)
-        ),
+        userinfo: action.payload,
+      };
+    case "MY-CART":
+      return {
+        ...state,
+        myCart: action.payload,
+      };
+    case "CART-ID":
+      return {
+        ...state,
+        CartID: action.payload,
       };
 
     case "ADD_TO_CART":
       return {
         ...state,
-        cartProducts: [...state.cartProducts, action.payload],
+        myCart: [...state.myCart, action.payload],
       };
     case "REMOVE_FROM_CART":
       return {
@@ -168,7 +122,7 @@ const reducer = (state = defaultState, action) => {
     case "INCREMENT_PRODUCT":
       return {
         ...state,
-        cartProducts: state.cartProducts.map((item) => {
+        myCart: state.myCart.map((item) => {
           if (item._id === action.payload.id) {
             item.quantity += action.payload.increment;
           }
@@ -198,22 +152,20 @@ const reducer = (state = defaultState, action) => {
 const store = createStore(reducer);
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <App />
-        <ToastContainer
-          position="top-left"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+      <ToastContainer
+        position="top-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+    </BrowserRouter>
+  </Provider>
 );

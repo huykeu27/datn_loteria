@@ -26,7 +26,6 @@ const Customers = () => {
     },
     {
       title: "Tags",
-
       dataIndex: "tags",
     },
     {

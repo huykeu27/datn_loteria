@@ -33,7 +33,7 @@ function Header() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
   const userinfo = selector.userinfo;
-  const cartProducts = selector.cartProducts;
+  const myCart = selector.myCart;
   const [isOpenLoginForm, setIsOpenLoginForm] = useState(true);
   const [isOpenRegisterForm, setIsOpenRegisterForm] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,17 +48,7 @@ function Header() {
     email: "",
     password: "",
   });
-  // const options = [
-  //   {
-  //     value: "Burns Bay Road",
-  //   },
-  //   {
-  //     value: "Downing Street",
-  //   },
-  //   {
-  //     value: "Wall Street",
-  //   },
-  // ];
+  const [cart, setCart] = useState([]);
 
   const { fullname, email, password } = newaccount;
   window.onscroll = () => {
@@ -101,7 +91,6 @@ function Header() {
         password: account.password,
       })
       .then((response) => {
-        console.log(response.data.data.role);
         if (response.data.data.role === "admin") {
           navigate("/admin");
         } else {
@@ -109,16 +98,29 @@ function Header() {
         }
         setCookie("user", response.data.data.accessToken, 1);
 
+        localStorage.setItem("info", JSON.stringify(response.data.data));
+        axios
+          .post("/api/cart/default", { id: response.data.data.id })
+          .then((res) => {
+            console.log(res);
+            if (res.data.listProduct.length >= 0) {
+              setCart(res.data.listProduct);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
         if (response.data.errcode === 0) {
           toast.success("Đăng nhập thành công ", {
             theme: "colored",
           });
-
           setToken(response.data.data.accessToken);
           setIsModalOpen(false);
         }
       })
       .catch((err) => {
+        console.log(err);
         if (err.response.data.errcode === 1) {
           toast.warning("Email và mật khẩu không được để trống", {
             theme: "colored",
@@ -129,12 +131,6 @@ function Header() {
           });
         }
       });
-    await axios
-      .get("/user/info")
-      .then((data) => {
-        // console.log(data);
-      })
-      .catch((err) => console.log(err));
   };
 
   const handleRegister = async () => {
@@ -162,8 +158,10 @@ function Header() {
       });
   };
   useEffect(() => {
+    setToken(getCookie("user"));
     checkLogin();
-  }, [account]);
+    getCart();
+  }, []);
 
   const handleOpenLoginForm = () => {
     setIsOpenLoginForm(true);
@@ -175,22 +173,27 @@ function Header() {
     setIsOpenRegisterForm(true);
   };
 
-  function checkLogin() {
-    let token = getCookie("user");
-    setToken(token);
-  }
+  const checkLogin = async () => {
+    let info = localStorage.getItem("info");
+    if (info) {
+      dispath({
+        type: "INFO-USER",
+        payload: JSON.parse(info),
+      });
+    }
+  };
 
-  // const getInfoUser = () => {
-  //   const url = "/user/info";
-  //   axios
-  //     .get(url)
-  //     .then((response) => {
-  //       console.log(response);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
+  const getCart = async () => {
+    let info = localStorage.getItem("info");
+    if (info) {
+      const resp = await axios.get(`/api/cart/mycart/${JSON.parse(info).id}`);
+      setCart(resp.data.listProduct);
+      dispath({
+        type: "MY-CART",
+        payload: resp.data.listProduct,
+      });
+    }
+  };
 
   return (
     <div>
@@ -245,7 +248,7 @@ function Header() {
           <li>
             <span className="icon">
               <img
-                src="https://www.lotteria.vn/grs-static/images/icon-pos-2.svg"
+                src="https://www.lotteria.vn/grs-static/images/icon-notification.svg"
                 alt=""
               />
             </span>
@@ -258,7 +261,9 @@ function Header() {
                   alt=""
                 />
               </span>
-              <span className="number">{cartProducts.length}</span>
+              <span className="number">
+                {cart && cart !== [] ? cart.length : 0}
+              </span>
             </NavLink>
           </li>
         </ul>
@@ -278,9 +283,7 @@ function Header() {
                   <input
                     type="email"
                     placeholder="abc@gmail.com"
-                    onChange={(e) => {
-                      onChangeEmail(e);
-                    }}
+                    onChange={onChangeEmail}
                   />
                 </div>
                 <div className="inp-account">
@@ -288,9 +291,7 @@ function Header() {
                   <input
                     type="password"
                     placeholder="Nhập mật khẩu"
-                    onChange={(e) => {
-                      onChangePassword(e);
-                    }}
+                    onChange={onChangePassword}
                   />
                 </div>
                 <div className="btn-login">

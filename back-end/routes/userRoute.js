@@ -3,7 +3,7 @@ const { checkLogin, checkAdmin } = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
-var authService = require("../middleware/auth");
+var userService = require("../service/userService");
 
 // bcript;
 let hashUserPassword = (password) => {
@@ -49,14 +49,11 @@ router.post("/sign-in", async function (req, res, next) {
         .status(400)
         .json({ message: "Thieu email hoac password", errcode: 1 });
     }
-    let data = await authService.checkLogin(req.body.email, req.body.password);
+    let data = await userService.checkLogin(req.body.email, req.body.password);
 
     if (data) {
       //push token vào db
-      await User.updateOne(
-        { _id: data.id },
-        { $push: { token: data.accessToken } }
-      );
+      await User.updateOne({ _id: data.id }, { token: data.accessToken });
       return res.json({ data, errcode: 0 });
     } else {
       return res
@@ -100,16 +97,6 @@ router.get("/get-user-by-name/:email", async (req, res) => {
   }
 });
 
-//get self info
-router.get("/get-self-info", async (req, res) => {
-  try {
-    const user = await User.findOne({ _id: req.cookies.user });
-    if (!user) res.redirect("/login");
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).json({ error, message: "server error" });
-  }
-});
 //remove user
 router.delete("/remove-user/:id", async (req, res) => {
   try {
@@ -125,22 +112,25 @@ router.delete("/remove-user/:id", async (req, res) => {
 //get user by id
 ////api/category/:id
 
-router.get("/info", async (req, res) => {
+router.get("/me", checkLogin, async (req, res) => {
   try {
-    // let data = authService.checkToken(req.cookies.token);
-    let data = jwt.verify(req.cookies.user, "huy");
-    // console.log(data);
-    // res.json(data);
-    if (data.email) {
-      let user = await User.findOne({ email: data.email }).select("-password");
-      if (user) {
-        res.status(200).json({ user, errcode: 0 });
-      }
-    } else {
-      return res.status(400).json({ message: "Not found" });
-    }
+    let user = await User.findOne({ token: req.cookies.accessToken });
+    // if (!user) return res.status(400).json({ message: "token loi" });
+    console.log(user);
+    res.json({ user });
   } catch (error) {
     res.json({ error });
   }
+});
+
+//delete address
+router.delete("/address/:id", async (req, res) => {
+  try {
+    let user = await User.findOne({ _id: req.body.id });
+    if (user) {
+      user.delete({ address: req.body.address });
+    }
+    res.json(user);
+  } catch (error) {}
 });
 module.exports = router;

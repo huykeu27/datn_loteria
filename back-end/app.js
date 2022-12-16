@@ -9,7 +9,9 @@ var indexRouter = require("./routes/indexRoute");
 var userRouter = require("./routes/userRoute");
 var productRouter = require("./routes/productRoute");
 var categoryRouter = require("./routes/categoryRoute");
-const formidableMiddleware = require("express-formidable");
+var cartRouter = require("./routes/cartRoute");
+var orderRoute = require("./routes/orderRoute");
+
 const cors = require("cors");
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -27,6 +29,8 @@ app.use("/", indexRouter);
 app.use("/user", userRouter);
 app.use("/product", productRouter);
 app.use("/category", categoryRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRoute);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

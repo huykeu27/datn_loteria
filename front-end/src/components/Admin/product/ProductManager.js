@@ -16,9 +16,9 @@ function ProductManager() {
     productname: "",
     categoryId: "",
     price: "",
-    patchImage: "",
   });
 
+  console.log(state);
   const columns = [
     {
       title: "ID",
@@ -76,6 +76,7 @@ function ProductManager() {
                   ...state,
                   id: record._id,
                   productname: record.name,
+                  categoryId: record.categoryId._id,
                   price: record.price,
                 });
                 setIsModalOpen(true);
@@ -104,7 +105,6 @@ function ProductManager() {
       .get(url)
       .then((response) => {
         setListProducts(response.data.listProducts);
-        // buildData(res.data.listCategories);
       })
       .catch((err) => {
         console.log(err);
@@ -158,8 +158,13 @@ function ProductManager() {
     formData.append("name", state.productname);
     formData.append("categoryId", state.categoryId);
     formData.append("price", state.price);
+
     await axios
-      .post(url, formData)
+      .post(url, formData, {
+        headers: {
+          "Content-Type": `multipart/form-data; boundary=${form._boundary}`,
+        },
+      })
       .then(function (response) {
         setState({
           ...state,
@@ -202,11 +207,16 @@ function ProductManager() {
 
   const handleUpdateProduct = async () => {
     const url = `/product/update-product/${state.id}`;
+    const form = document.querySelector(".form-update");
+    const formData = new FormData(form);
+    formData.append("name", state.productname);
+    formData.append("categoryId", state.categoryId);
+    formData.append("price", state.price);
     await axios
-      .put(url, {
-        name: state.productname,
-        price: state.price,
-        categoryId: state.categoryId,
+      .put(url, formData, {
+        headers: {
+          "Content-Type": `multipart/form-data; boundary=${form._boundary}`,
+        },
       })
       .then((response) => {
         toast.success("Update thành công");
@@ -298,29 +308,22 @@ function ProductManager() {
                 </div>
               </Upload>
             </Form.Item> */}
-            <Form.Item label="Ảnh">
-              <form
-                action="/stats"
-                enctype="multipart/form-data"
-                method="post"
-                className="form-create"
-              >
-                <input
-                  type="file"
-                  className="form-control-file"
-                  name="productThump"
-                />
-              </form>
-            </Form.Item>
-            <Button
-              type="primary"
-              onClick={() => {
-                handleCreateNewProduct();
-              }}
-            >
-              Thêm mới
-            </Button>
           </Form>
+          <form action="/stats" method="post" className="form-create">
+            <input
+              type="file"
+              className="form-control-file"
+              name="productThump"
+            />
+          </form>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleCreateNewProduct();
+            }}
+          >
+            Thêm mới
+          </Button>
         </div>
       )}
 
@@ -393,21 +396,14 @@ function ProductManager() {
                 ))}
             </select>
           </Form.Item>
-          <Form.Item label="Upload" valuePropName="fileList">
-            <form
-              action="/stats"
-              enctype="multipart/form-data"
-              method="post"
-              className="form-update"
-            >
-              <input
-                type="file"
-                class="form-control-file"
-                name="categorythump"
-              />
-            </form>
-          </Form.Item>
         </Form>
+        <form action="/stats" method="post" className="form-update">
+          <input
+            type="file"
+            className="form-control-file"
+            name="productThump"
+          />
+        </form>
       </Modal>
       {/* <FormDisabledDemo /> */}
     </div>

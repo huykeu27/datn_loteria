@@ -2,21 +2,16 @@
   {
     "display_name": "Thông tin tài khoản",
     "route": "/profile",
-    "icon": "<MessageOutlined />"
+    "icon": "https://www.lotteria.vn/grs-static/images/icon-myaccount-white.svg"
   },
   {
     "display_name": "Địa chỉ",
     "route": "/profile/address",
-    "icon": "bx bx-user-pin"
+    "icon": "https://www.lotteria.vn/grs-static/images/icon-pos-white.svg"
   },
   {
     "display_name": "Đơn hàng",
-    "route": "/profile/order",
-    "icon": "bx bx-package"
-  },
-  {
-    "display_name": "Đăng xuất",
-    "route": "/",
-    "icon": "bx bx-cart"
+    "route": "/profile/order/waiting",
+    "icon": "https://www.lotteria.vn/grs-static/images/icon-history-white.svg"
   }
 ]

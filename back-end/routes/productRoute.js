@@ -117,34 +117,50 @@ router.delete("/delete-product/:id", async (req, res) => {
 });
 
 //update product
-router.put("/update-product/:id", async (req, res) => {
-  try {
-    const product = await Product.findOne({ _id: req.params.id });
-    if (product) {
-      if (!req.body.name || req.body.price === 0 || !req.body.categoryId) {
-        return res.status(400).json({ errcode: 1, message: "Value null" });
-      } else {
-        let check = await Product.findOne({
-          name: req.body.name,
-          price: req.body.price,
-          categoryId: req.body.categoryId,
-        });
-        if (check) {
-          return res.status(400).json({ errcode: 2, message: "Already exist" });
+router.put(
+  "/update-product/:id",
+  upload.single("productThump"),
+  async (req, res) => {
+    try {
+      const product = await Product.findOne({ _id: req.params.id });
+      if (product) {
+        if (!req.body.name || req.body.price === 0 || !req.body.categoryId) {
+          return res.status(400).json({ errcode: 1, message: "Value null" });
         } else {
-          let update = await product.update({
-            name: req.body.name,
-            price: req.body.price,
-            categoryId: req.body.categoryId,
-          });
-          res.status(200).json(update);
+          if (req.file) {
+            let update = await product.update({
+              name: req.body.name,
+              price: req.body.price,
+              categoryId: req.body.categoryId,
+              imageUrl: `${process.env.SERVER_NAME}/public/imagesProduct/${req.file.filename}`,
+            });
+            res.status(200).json(update);
+          } else {
+            let check = await Product.findOne({
+              name: req.body.name,
+              price: req.body.price,
+              categoryId: req.body.categoryId,
+            });
+            if (check) {
+              return res
+                .status(400)
+                .json({ errcode: 2, message: "Already exist" });
+            } else {
+              let update = await product.update({
+                name: req.body.name,
+                price: req.body.price,
+                categoryId: req.body.categoryId,
+              });
+              res.status(200).json(update);
+            }
+          }
         }
       }
+    } catch (error) {
+      res.status(400).json({ error });
     }
-  } catch (error) {
-    res.status(400).json({ error });
   }
-});
+);
 
 //get combo
 router.get("/combo", async (req, res) => {

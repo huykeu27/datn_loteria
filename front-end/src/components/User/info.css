@@ -1,0 +1,37 @@
+.ant-picker {
+  width: 100%;
+}
+.ant-picker,
+.ant-input {
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid #ff5b6a;
+  margin-right: 30px;
+}
+.ant-form-item label {
+  float: left;
+  font-size: 18px;
+  font-weight: 500;
+  display: block;
+  padding-top: 10px;
+}
+
+.ant-input-password {
+  border: 1px solid #ff5b6a;
+  border-radius: 6px;
+  padding: 0 10px;
+}
+.ant-form-item {
+  padding: 0 30px;
+}
+.ant-form-item {
+  display: flex !important;
+  flex-direction: column;
+}
+.ant-row {
+  flex-flow: nowrap !important;
+}
+.ant-form-item-required,
+.ant-form-item-label {
+  width: 250px;
+}
