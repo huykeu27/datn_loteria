@@ -7,8 +7,70 @@ import { Space, Table, Tag } from "antd";
 import "./order.css";
 
 function OrderSuccess() {
+  const columns = [
+    {
+      title: "Mã đơn hàng",
+      dataIndex: "_id",
+    },
+    {
+      title: "Giỏ hàng",
+      children: [
+        {
+          title: "Tên sản phẩm",
+          key: "listProducts",
+          dataIndex: "listProducts",
+          render: (listProducts) => (
+            <div className="listProduct-item">
+              {listProducts?.map((item) => {
+                return <span key={item._id}>{item.productId.name}</span>;
+              })}
+            </div>
+          ),
+        },
+        {
+          title: "Số lượng",
+          key: "listProducts",
+          dataIndex: "listProducts",
+          render: (listProducts) => (
+            <div className="listProduct-item">
+              {listProducts?.map((item) => {
+                return <span key={item._id}>{item.quantity}</span>;
+              })}
+            </div>
+          ),
+        },
+        {
+          title: "Đơn giá",
+          key: "listProducts",
+          dataIndex: "listProducts",
+          render: (listProducts) => (
+            <div className="listProduct-item">
+              {listProducts?.map((item) => {
+                return (
+                  <span key={item._id}>
+                    {Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(item.productId.price)}
+                  </span>
+                );
+              })}
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      title: "Thành tiền",
+      dataIndex: "total",
+    },
+    {
+      title: "Địa chỉ",
+      dataIndex: "address",
+    },
+  ];
   const selector = useSelector((state) => state);
-  const userId = JSON.parse(localStorage.getItem("info")).id;
+  const userId = JSON.parse(localStorage.getItem("info"))._id;
   const [listOrder, setListOrder] = useState([]);
   const getOrder = async () => {
     let resp = await axios.get(`/api/order/success/${userId}`);
@@ -20,30 +82,14 @@ function OrderSuccess() {
   }, []);
   return (
     <div className="order_success_content">
-      {listOrder.map((item) => {
-        return (
-          <div className="order_item">
-            <div className="item_order_product">
-              {item.listProducts.map((product, index) => {
-                return (
-                  <div className="order_product" key={index}>
-                    <span>
-                      {product.productId.name}x{product.quantity}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="item_order_total">
-              <span>{item.total}</span>
-            </div>
-            <div className="item_order_status">
-              {item.status === true ? <span>Hoàn thành</span> : null}
-            </div>
-          </div>
-        );
-      })}
+      <Table
+        rowKey="_id"
+        columns={columns}
+        dataSource={listOrder}
+        pagination={{
+          defaultPageSize: 4,
+        }}
+      />
     </div>
   );
 }

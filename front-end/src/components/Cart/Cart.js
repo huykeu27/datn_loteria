@@ -12,44 +12,47 @@ import { NavLink } from "react-router-dom";
 function Cart() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
-  // const myCart = selector.myCart;
+  const CartID = selector.CartID;
   const userinfo = selector.userinfo;
   const [myCart, setCart] = useState([]);
-  // const [CartId, setCartId] = useState("");
   const getCart = async () => {
-    let info = localStorage.getItem("info");
+    let info = JSON.parse(localStorage.getItem("info"));
+    console.log(info);
     if (info) {
-      const resp = await axios.get(`/api/cart/mycart/${JSON.parse(info).id}`);
+      const resp = await axios.get(`/api/cart/mycart/${info._id}`);
       setCart(resp.data.listProduct);
-      // setCartId(resp.data._id);
-      dispath({ type: "CART-ID", payload: resp.data._id });
+      dispath({
+        type: "MY-CART",
+        payload: resp.data.listProduct,
+      });
     }
   };
-  useEffect(() => {
-    getCart();
-  }, []);
-  function clearCart() {
-    alert("Bạn có muốn xóa hết sản phẩm");
-
-    dispath({ type: "CLEAR_CART", payload: "" });
-  }
+  console.log(CartID);
+  const clearCart = async (CartID) => {
+    if (window.confirm("Bạn có muốn xóa hết sản phẩm") === true) {
+      let clearCart = await axios.delete(`/api/cart/clear/${CartID}`);
+      getCart();
+    }
+  };
   const increase = async (id) => {
-    await axios.patch(`/api/cart/increase/${userinfo.id}`, {
+    await axios.patch(`/api/cart/increase/${userinfo._id}`, {
       productId: id,
     });
     getCart();
   };
-  const decrement = async (id) => {
-    await axios.patch(`/api/cart/decrement/${userinfo.id}`, {
+  const decrement = async (id, quantity) => {
+    const resp = await axios.patch(`/api/cart/decrement/${userinfo._id}`, {
       productId: id,
+      quantity: quantity,
     });
+    console.log(resp);
     getCart();
   };
 
-  function removeItem(productId) {
+  const removeItem = (productId) => {
     if (window.confirm("Product remove from cart") === true) {
       axios
-        .patch(`/api/cart/${userinfo.id}`, { productId: productId })
+        .patch(`/api/cart/${userinfo._id}`, { productId: productId })
         .then((response) => {
           console.log(response);
           dispath({
@@ -62,7 +65,11 @@ function Cart() {
           console.log(error);
         });
     }
-  }
+  };
+
+  useEffect(() => {
+    getCart();
+  }, []);
   return (
     <div className="cart">
       {myCart && myCart.length > 0 ? (
@@ -85,7 +92,7 @@ function Cart() {
                 </button>
                 <button
                   className="btn-updown"
-                  onClick={() => decrement(item.productId._id)}
+                  onClick={() => decrement(item.productId._id, item.quantity)}
                 >
                   <CaretDownOutlined />
                 </button>
@@ -128,7 +135,7 @@ function Cart() {
           <NavLink to={"/checkout/cart"}>
             <button className="pay">Thanh toán</button>
           </NavLink>
-          <button className="pay cancle " onClick={() => clearCart()}>
+          <button className="pay cancle " onClick={() => clearCart(CartID)}>
             Hủy bỏ
           </button>
         </div>

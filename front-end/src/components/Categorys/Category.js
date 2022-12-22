@@ -4,8 +4,6 @@ import { NavLink } from "react-router-dom";
 import "../Categorys/category.css";
 import axios from "../../config/axios";
 function Category() {
-  // const selector = useSelector((state) => state);
-  // const categorys = selector.categorys;
   const [categorys, setListCategory] = useState([]);
   const getAllCategory = async () => {
     const url = "/category/get-all-category";

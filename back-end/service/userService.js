@@ -18,7 +18,7 @@ exports.checkLogin = async (email, password) => {
         { expiresIn: 3000 }
       );
       return {
-        id: userFind._id,
+        _id: userFind._id,
         email: userFind.email,
         fullName: userFind.fullName,
         dateOfBirth: userFind.dateOfBirth,

@@ -7,30 +7,37 @@ import { Link, NavLink, useParams, useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 import axios from "../../config/axios";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 function Product() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState("");
-
   const myCart = selector.myCart;
   const userinfo = selector.userinfo;
   const { productId } = useParams();
-  console.log(myCart);
-  function addToCart(id) {
-    axios
-      .patch(`/api/cart/add-product/${userinfo.id}`, {
-        productId: id,
-      })
-      .then((response) => {
-        console.log(response);
-        alert("Product add to cart");
-      })
-      .catch((error) => {
-        console.log(error);
+  const getCart = async () => {
+    let info = JSON.parse(localStorage.getItem("info"));
+    if (info) {
+      const resp = await axios.get(`/api/cart/mycart/${info._id}`);
+      dispath({
+        type: "MY-CART",
+        payload: resp.data.listProduct,
       });
-  }
+    }
+  };
+  const addToCart = async (id) => {
+    try {
+      let resp = await axios.patch(`/api/cart/add-product/${userinfo._id}`, {
+        productId: id,
+      });
+      toast.success("Đã thêm sản phẩm vào giỏ hàng");
+      getCart();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     axios(`/product/get-product-by-category/${productId}`)

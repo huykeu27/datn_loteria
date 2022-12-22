@@ -112,25 +112,48 @@ router.delete("/remove-user/:id", async (req, res) => {
 //get user by id
 ////api/category/:id
 
-router.get("/me", checkLogin, async (req, res) => {
+router.get("/me/:id", async (req, res) => {
   try {
-    let user = await User.findOne({ token: req.cookies.accessToken });
+    let user = await User.findOne({ _id: req.params.id });
     // if (!user) return res.status(400).json({ message: "token loi" });
-    console.log(user);
     res.json({ user });
   } catch (error) {
     res.json({ error });
   }
 });
+//get address
 
-//delete address
-router.delete("/address/:id", async (req, res) => {
+router.get("/address/:id", async (req, res) => {
   try {
-    let user = await User.findOne({ _id: req.body.id });
-    if (user) {
-      user.delete({ address: req.body.address });
-    }
+    let user = await User.findOne({
+      _id: req.params.id,
+    });
     res.json(user);
+  } catch (error) {
+    res.json(error);
+  }
+});
+//add address
+router.patch("/address/:id", async (req, res) => {
+  try {
+    let user = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      { $push: { address: req.body.address } }
+    );
+
+    res.json(user);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+///edit address
+router.patch("/edit-address/:id", async (req, res) => {
+  try {
+    let user = await User.updateOne(
+      { _id: req.params.id, address: req.body.address },
+      { $set: { "address.$": req.body.newaddress } }
+    );
   } catch (error) {}
 });
 module.exports = router;

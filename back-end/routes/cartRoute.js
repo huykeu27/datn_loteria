@@ -85,11 +85,14 @@ router.patch("/increase/:id", async (req, res) => {
 //giam so luong
 router.patch("/decrement/:id", async (req, res) => {
   try {
-    let cart = await Cart.updateOne(
-      { userId: req.params.id, "listProduct.productId": req.body.productId },
-      { $inc: { "listProduct.$.quantity": -1 } }
-    );
-    res.json(cart);
+    let quantity = req.body.quantity;
+    if (quantity > 1) {
+      let cart = await Cart.updateOne(
+        { userId: req.params.id, "listProduct.productId": req.body.productId },
+        { $inc: { "listProduct.$.quantity": -1 } }
+      );
+      res.json(cart);
+    }
   } catch (error) {
     res.json(error);
   }
@@ -98,7 +101,7 @@ router.patch("/decrement/:id", async (req, res) => {
 router.delete("/clear/:id", async (req, res) => {
   try {
     let updateCart = await Cart.updateOne(
-      { cartId: req.params.id },
+      { _id: req.params.id },
       { $set: { listProduct: [] } },
       { multi: true }
     );

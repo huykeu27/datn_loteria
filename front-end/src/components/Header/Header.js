@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../Header/header.css";
-import { Modal, AutoComplete } from "antd";
+import { Modal } from "antd";
 import axios from "../../config/axios";
 import { toast } from "react-toastify";
 
@@ -49,7 +49,7 @@ function Header() {
     password: "",
   });
   const [cart, setCart] = useState([]);
-
+  const [role, setRole] = useState("");
   const { fullname, email, password } = newaccount;
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
@@ -97,12 +97,11 @@ function Header() {
           navigate("/");
         }
         setCookie("user", response.data.data.accessToken, 1);
-
         localStorage.setItem("info", JSON.stringify(response.data.data));
+
         axios
-          .post("/api/cart/default", { id: response.data.data.id })
+          .post("/api/cart/default", { id: response.data.data._id })
           .then((res) => {
-            console.log(res);
             if (res.data.listProduct.length >= 0) {
               setCart(res.data.listProduct);
             }
@@ -163,6 +162,10 @@ function Header() {
     getCart();
   }, []);
 
+  useEffect(() => {
+    setRole(JSON.parse(localStorage?.getItem("info"))?.role);
+  }, [token]);
+
   const handleOpenLoginForm = () => {
     setIsOpenLoginForm(true);
     setIsOpenRegisterForm(false);
@@ -184,16 +187,32 @@ function Header() {
   };
 
   const getCart = async () => {
-    let info = localStorage.getItem("info");
-    if (info) {
-      const resp = await axios.get(`/api/cart/mycart/${JSON.parse(info).id}`);
-      setCart(resp.data.listProduct);
-      dispath({
-        type: "MY-CART",
-        payload: resp.data.listProduct,
-      });
+    try {
+      let info = JSON.parse(localStorage.getItem("info"));
+
+      if (info) {
+        const resp = await axios.get(`/api/cart/mycart/${info._id}`);
+
+        if (resp.status === 200) {
+          setCart(resp.data.listProduct);
+          dispath({
+            type: "MY-CART",
+            payload: resp.data.listProduct,
+          });
+          dispath({
+            type: "CART-ID",
+            payload: resp.data._id,
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  useEffect(() => {
+    setCart(myCart);
+  }, [myCart]);
 
   return (
     <div>
@@ -207,21 +226,21 @@ function Header() {
         </NavLink>
         <form className="search">
           <input type="text" placeholder="Tìm kiếm sản phẩm" />
-          {/* <AutoComplete
-            style={{
-              width: 200,
-            }}
-            options={options}
-            placeholder="Tìm kiếm sản phẩm"
-            filterOption={(inputValue, option) =>
-              option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
-              -1
-            }
-          /> */}
           <button>Tìm kiếm</button>
         </form>
         <ul className="account-menu">
-          {token && token !== "" ? (
+          {!token ? (
+            <li>
+              <NavLink>
+                <span className="icon" onClick={showModal}>
+                  <img
+                    src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
+                    alt=""
+                  />
+                </span>
+              </NavLink>
+            </li>
+          ) : role === "user" ? (
             <li>
               <NavLink to="/profile">
                 <span className="icon">
@@ -234,8 +253,8 @@ function Header() {
             </li>
           ) : (
             <li>
-              <NavLink>
-                <span className="icon" onClick={showModal}>
+              <NavLink to="/admin">
+                <span className="icon">
                   <img
                     src="https://www.lotteria.vn/grs-static/images/icon-myaccount.svg"
                     alt=""
@@ -246,12 +265,14 @@ function Header() {
           )}
 
           <li>
-            <span className="icon">
-              <img
-                src="https://www.lotteria.vn/grs-static/images/icon-notification.svg"
-                alt=""
-              />
-            </span>
+            <NavLink to="/profile/address">
+              <span className="icon">
+                <img
+                  src="https://www.lotteria.vn/grs-static/images/icon-pos-2.svg"
+                  alt=""
+                />
+              </span>
+            </NavLink>
           </li>
           <li>
             <NavLink to="/cart">

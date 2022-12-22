@@ -8,3 +8,9 @@
   border: 2px solid #c47135;
   border-radius: 8px;
 }
+.mng-address-item {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  gap: 15px;
+}

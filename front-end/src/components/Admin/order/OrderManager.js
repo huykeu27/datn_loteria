@@ -3,10 +3,11 @@ import "./ordermanager.css";
 import axios from "../../../config/axios";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Tag, Table } from "antd";
+import { toast } from "react-toastify";
 function OrderManager() {
   const columns = [
     {
-      title: "ID",
+      title: "Mã đơn hàng",
       dataIndex: "_id",
     },
     {
@@ -14,32 +15,62 @@ function OrderManager() {
       children: [
         {
           title: "Tên sản phẩm",
-          dataIndex: "street",
-          key: "street",
-          width: 150,
+          key: "listProducts",
+          dataIndex: "listProducts",
+          render: (listProducts) => (
+            <div className="listProduct-item">
+              {listProducts?.map((item) => {
+                return <span key={item._id}>{item.productId.name}</span>;
+              })}
+            </div>
+          ),
         },
         {
           title: "Số lượng",
-          render: (record) => {
-            // record.listProducts.map((item) => {
-            //   console.log(item);
-            //   return (
-            //     <>
-            //       <span>1</span>
-            //     </>
-            //   );
-            // });
-            return <h1>1</h1>;
-          },
+          key: "listProducts",
+          dataIndex: "listProducts",
+          render: (listProducts) => (
+            <div className="listProduct-item">
+              {listProducts?.map((item) => {
+                return <span key={item._id}>{item.quantity}</span>;
+              })}
+            </div>
+          ),
         },
         {
           title: "Đơn giá",
+          key: "listProducts",
+          dataIndex: "listProducts",
+          render: (listProducts) => (
+            <div className="listProduct-item">
+              {listProducts?.map((item) => {
+                return (
+                  <span key={item._id}>
+                    {Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(item.productId.price)}
+                  </span>
+                );
+              })}
+            </div>
+          ),
         },
       ],
     },
     {
       title: "Tổng tiền",
       dataIndex: "total",
+      render: (total) => {
+        return (
+          <span>
+            {Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+            }).format(total)}
+          </span>
+        );
+      },
     },
     {
       title: "Địa chỉ",
@@ -48,36 +79,25 @@ function OrderManager() {
     {
       title: "Trạng thái",
       render: (record) => {
+        console.log(record);
         return (
           <>
-            {record.enable === true ? (
-              <>
-                <Tag color="green">Đang hoạt động</Tag>
-              </>
-            ) : (
-              <>
-                <Tag color="yellow">Xác nhận</Tag>
-              </>
-            )}
+            <Tag
+              color="yellow"
+              style={{ cursor: "pointer", fontSize: 18 }}
+              onClick={() => {
+                acceptOrder(record._id);
+                getListOrder();
+              }}
+            >
+              Xác nhận
+            </Tag>
           </>
         );
       },
     },
   ];
-  const colums2 = [
-    {
-      title: "tên sản phẩm",
-      dataIndex: "_id",
-    },
-    {
-      title: "Đơn giá",
-      dataIndex: "_id",
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "_id",
-    },
-  ];
+
   const [listOrder, setListOrder] = useState();
   console.log(listOrder);
   const getListOrder = async () => {
@@ -91,12 +111,21 @@ function OrderManager() {
         console.log(err);
       });
   };
+  const acceptOrder = async (id) => {
+    try {
+      let resp = axios.patch(`/api/order/${id}`, { status: true });
+      toast.success("Đơn hàng đã được xác nhận");
+      console.log(resp);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getListOrder();
   }, []);
   return (
     <div className="orders">
-      OrderManager
       <Table
         className="customer-table"
         columns={columns}

@@ -23,17 +23,21 @@ const Customers = () => {
     {
       title: "Địa chỉ",
       dataIndex: "address",
+      render: (address) => (
+        <div className="mng-address-item">
+          {address?.map((item) => {
+            console.log(item);
+            return <span>{item}</span>;
+          })}
+        </div>
+      ),
     },
-    {
-      title: "Tags",
-      dataIndex: "tags",
-    },
+
     {
       title: "Hành động",
       render: (record) => {
         return (
           <>
-            <EditOutlined />
             <DeleteOutlined
               onClick={() => {
                 if (window.confirm("Bạn chắc chắn muốn khóa không???")) {

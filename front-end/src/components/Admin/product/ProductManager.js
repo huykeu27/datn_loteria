@@ -21,7 +21,7 @@ function ProductManager() {
   console.log(state);
   const columns = [
     {
-      title: "ID",
+      title: "Mã sản phẩm",
       dataIndex: "_id",
     },
     {

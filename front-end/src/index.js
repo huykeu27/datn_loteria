@@ -11,83 +11,12 @@ import mainReducer from "./reducers/RootReducer";
 const defaultState = {
   products: [],
   cartProducts: [],
-  categorys: [
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142469b57a1",
-    //   },
-    //   categorylink: "rice",
-    //   categoryName: "Cơm-Mì Ý",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/Promotion-08_1.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142469b579f",
-    //   },
-    //   categorylink: "burger",
-    //   categoryName: "Burger",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/Promotion-04_1.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142469b57a3",
-    //   },
-    //   categorylink: "drinks",
-    //   categoryName: "Thức uống",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/Promotion-10_1.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142469b57a0",
-    //   },
-    //   categorylink: "chicken",
-    //   categoryName: "Gà rán",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/BG-Menu-Chicken-01-01_1.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142449b57a0",
-    //   },
-    //   categorylink: "chicken-set",
-    //   categoryName: "Gà rán phần",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/Promotion-03_2.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142469b57a2",
-    //   },
-    //   categorylink: "dessert",
-    //   categoryName: "Thức ăn nhẹ",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/BG-Menu-09_1.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f30142469b27a2",
-    //   },
-    //   ategorylink: "value",
-    //   categoryName: "Value",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/BG-Menu-07_1.jpg",
-    // },
-    // {
-    //   id: {
-    //     $oid: "6356db9b19f3014q469b27a2",
-    //   },
-    //   categoryName: "Combo",
-    //   thump:
-    //     "https://www.lotteria.vn/media/catalog/tmp/category/BG-Menu-06_1.jpg",
-    // },
-  ],
+  categorys: [],
   myCart: [],
   combo: [{}],
   userinfo: {},
   CartID: "",
+  role: "",
 };
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
@@ -105,6 +34,11 @@ const reducer = (state = defaultState, action) => {
       return {
         ...state,
         CartID: action.payload,
+      };
+    case "ROLE":
+      return {
+        ...state,
+        role: action.payload,
       };
 
     case "ADD_TO_CART":

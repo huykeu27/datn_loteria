@@ -16,7 +16,7 @@ router.get("/list", async (req, res) => {
 
 router.get("/waiting/:id", async (req, res) => {
   try {
-    let order = await Order.find({ cartId: req.params.id, status: false });
+    let order = await Order.find({ userId: req.params.id, status: false });
     res.json(order);
   } catch (error) {
     res.json(error);
@@ -25,7 +25,7 @@ router.get("/waiting/:id", async (req, res) => {
 //get order list success
 router.get("/success/:id", async (req, res) => {
   try {
-    let order = await Order.find({ cartId: req.params.id, status: true });
+    let order = await Order.find({ userId: req.params.id, status: true });
     res.json(order);
   } catch (error) {
     res.json(error);
@@ -44,6 +44,17 @@ router.post("/neworder", async (req, res) => {
     res.json(order);
   } catch (error) {
     res.status(400).json(error);
+  }
+});
+
+//accept order
+router.patch("/:id", async (req, res) => {
+  try {
+    let order = await Order.findOne({ _id: req.params.id });
+    let updateStatus = await order.update({ status: req.body.status });
+    res.json(updateStatus);
+  } catch (error) {
+    res.json(error);
   }
 });
 module.exports = router;

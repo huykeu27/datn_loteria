@@ -3,6 +3,7 @@ import "../Combo/combo.css";
 import Slider from "react-slick";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "../../config/axios";
+import { toast } from "react-toastify";
 function Combo() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
@@ -33,15 +34,25 @@ function Combo() {
   useEffect(() => {
     getCombo();
   }, []);
-
+  const getCart = async () => {
+    let info = JSON.parse(localStorage.getItem("info"));
+    if (info) {
+      const resp = await axios.get(`/api/cart/mycart/${info._id}`);
+      dispath({
+        type: "MY-CART",
+        payload: resp.data.listProduct,
+      });
+    }
+  };
   function addToCart(id) {
     axios
-      .patch(`/api/cart/add-product/${userinfo.id}`, {
+      .patch(`/api/cart/add-product/${userinfo._id}`, {
         productId: id,
       })
       .then((response) => {
         console.log(response);
-        alert("Product add to cart");
+        getCart();
+        toast.success("Đã thêm combo vào giỏ hàng");
       })
       .catch((error) => {
         console.log(error);
