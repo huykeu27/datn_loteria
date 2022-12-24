@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./payment.css";
 import axios from "../../config/axios";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { EditOutlined, DeleteOutlined, HomeOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { EditOutlined } from "@ant-design/icons";
+import { Modal } from "antd";
 import { toast } from "react-toastify";
 function Payment() {
   const navigate = useNavigate();
   const selector = useSelector((state) => state);
   const CartID = selector.CartID;
   const userId = JSON.parse(localStorage.getItem("info"))._id;
-  const addressLocal = JSON.parse(localStorage.getItem("info")).address;
-  const [address, setAddress] = useState(addressLocal[0]);
+
+  // const addressLocal = JSON.parse(localStorage.getItem("info")).address;
+  const [listaddress, setListAddress] = useState();
+  const [address, setAddress] = useState("");
   const [myCart, setCart] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
@@ -31,6 +33,16 @@ function Payment() {
       setCart(resp.data.listProduct);
     }
   };
+  const getAddress = async () => {
+    try {
+      let resp = await axios.get(`/user/address/${userId}`);
+      console.log(resp.data.address);
+      setListAddress(resp.data.address);
+      setAddress(resp.data.address[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   let sum = 0;
   myCart.forEach((element) => {
@@ -39,22 +51,26 @@ function Payment() {
 
   useEffect(() => {
     getCart();
+    getAddress();
   }, []);
+  console.log(address);
   const handlePayment = async () => {
     if (!address) {
       toast.warning("Thiếu thông tin địa chỉ");
     } else {
-      const resp = await axios.post(`/api/order/neworder`, {
-        userId: userId,
-        listProducts: myCart,
-        total: sum,
-        address: address,
-      });
+      if (window.confirm("Xác nhận mua hàng") === true) {
+        const resp = await axios.post(`/api/order/neworder`, {
+          userId: userId,
+          listProducts: myCart,
+          total: sum,
+          address: address,
+        });
 
-      if (resp.status === 200) {
-        let clearCart = await axios.delete(`/api/cart/clear/${CartID}`);
-        toast.success("Vui lòng chờ xác nhận đơn hàng");
-        navigate("/profile/order/waiting");
+        if (resp.status === 200) {
+          let clearCart = await axios.delete(`/api/cart/clear/${CartID}`);
+          toast.success("Vui lòng chờ xác nhận đơn hàng");
+          navigate("/profile/order/waiting");
+        }
       }
     }
   };
@@ -62,7 +78,7 @@ function Payment() {
     <div className="payment_content">
       <div className="payment_content_left">
         <div className="payment_title">
-          <h1>YOUR CART</h1>
+          <h1>GIỎ HÀNG</h1>
         </div>
         {myCart.map((item) => {
           return (
@@ -147,7 +163,7 @@ function Payment() {
         footer={null}
       >
         <div className="address-content">
-          {addressLocal?.map((item, index) => (
+          {listaddress?.map((item, index) => (
             <div
               className="address-content-item"
               key={index}

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import profile_item from "../../assets/JSONdata/profile-user.json";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import profile_item from "../../../assets/JSONdata/profile-user.json";
+import { useSelector } from "react-redux";
 import { NavLink, Outlet } from "react-router-dom";
-import axios from "../../config/axios";
+
 import "./profile.css";
 
 const ProfileItem = (props) => {
@@ -18,29 +18,28 @@ const ProfileItem = (props) => {
   );
 };
 function clearCookies() {
-  window.confirm("Bạn muốn đăng xuất");
-  var cookies = document.cookie.split(";");
-  for (var i = 0; i < cookies.length; i++) {
-    var cookie = cookies[i];
-    var eqPos = cookie.indexOf("=");
-    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
+  if (window.confirm("Bạn muốn đăng xuất") === true) {
+    var cookies = document.cookie.split(";");
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = cookies[i];
+      var eqPos = cookie.indexOf("=");
+      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+      document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    }
 
-  localStorage.removeItem("info");
+    localStorage.removeItem("info");
+  }
 }
 const Profile = (props) => {
-  const dispath = useDispatch();
   const selector = useSelector((state) => state);
   const userinfo = selector.userinfo;
-  const myCart = selector.myCart;
-  // const fname = userinfo.fullName.slice(0, 1).toUpperCase();
+
   return (
     <div className="profile_content">
       <div className="content-main">
         <div className="profile_menu">
           <div className="avatar">
-            <div className="f-name">{userinfo.fname}</div>
+            <div className="f-name"></div>
             <div className="f-fullname">
               <span>{userinfo.fullName}</span>
             </div>

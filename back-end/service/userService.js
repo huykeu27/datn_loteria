@@ -6,9 +6,10 @@ exports.checkLogin = async (email, password) => {
   var userFind = await User.findOne({
     email: email,
   });
-
+  console.log(userFind);
   if (userFind) {
-    let check = bcrypt.compare(password, userFind.password);
+    let check = await bcrypt.compare(password, userFind.password);
+
     if (check) {
       var accessToken = jwt.sign(
         {

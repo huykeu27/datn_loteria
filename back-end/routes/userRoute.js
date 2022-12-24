@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/User");
 var userService = require("../service/userService");
-
+const bcrypt = require("bcrypt");
 // bcript;
 let hashUserPassword = (password) => {
   const bcrypt = require("bcrypt");
@@ -15,7 +15,7 @@ let hashUserPassword = (password) => {
 //create account
 router.post("/create-account", async (req, res) => {
   try {
-    if (!req.body.fullname || !req.body.email || !req.body.password) {
+    if (!req.body.fullName || !req.body.email || !req.body.password) {
       return res
         .status(400)
         .json({ message: "Vui long dien day du thong tin", errcode: 1 });
@@ -26,10 +26,10 @@ router.post("/create-account", async (req, res) => {
           .status(400)
           .json({ message: "Email already exist", errcode: 2 });
       } else {
-        const { fullname, email, password } = req.body;
+        const { fullName, email, password } = req.body;
         let passwordHash = await hashUserPassword(req.body.password);
         let account = await User.create({
-          fullName: req.body.fullname,
+          fullName: req.body.fullName,
           email: req.body.email,
           password: passwordHash,
         });
@@ -49,11 +49,12 @@ router.post("/sign-in", async function (req, res, next) {
         .status(400)
         .json({ message: "Thieu email hoac password", errcode: 1 });
     }
+    console.log(req.body.email, req.body.password);
     let data = await userService.checkLogin(req.body.email, req.body.password);
 
     if (data) {
       //push token vào db
-      await User.updateOne({ _id: data.id }, { token: data.accessToken });
+      await User.updateOne({ _id: data._id }, { token: data.accessToken });
       return res.json({ data, errcode: 0 });
     } else {
       return res
@@ -66,6 +67,31 @@ router.post("/sign-in", async function (req, res, next) {
   }
 });
 
+//change password
+router.patch("/change-pass", async (req, res) => {
+  try {
+    let userFind = await User.findOne({
+      email: req.body.email,
+    });
+
+    if (userFind) {
+      let check = await bcrypt.compare(req.body.passwordold, userFind.password);
+      if (check) {
+        let passwordHash = await hashUserPassword(req.body.passwordnew);
+        let updatepassword = await userFind.updateOne({
+          password: passwordHash,
+        });
+        if (updatepassword) {
+          res.json("update thanh cong");
+        }
+      } else {
+        res.status(400).json({ errcode: 1, message: "Sai mật khẩu cũ" });
+      }
+    }
+  } catch (error) {
+    res.json({ error, message: "loi roi" });
+  }
+});
 //get all user
 router.get("/get-all-user", async (req, res) => {
   try {
@@ -115,7 +141,7 @@ router.delete("/remove-user/:id", async (req, res) => {
 router.get("/me/:id", async (req, res) => {
   try {
     let user = await User.findOne({ _id: req.params.id });
-    // if (!user) return res.status(400).json({ message: "token loi" });
+
     res.json({ user });
   } catch (error) {
     res.json({ error });
@@ -147,13 +173,41 @@ router.patch("/address/:id", async (req, res) => {
   }
 });
 
-///edit address
-router.patch("/edit-address/:id", async (req, res) => {
+//delete address
+
+router.patch("/remove-address/:id", async (req, res) => {
   try {
-    let user = await User.updateOne(
-      { _id: req.params.id, address: req.body.address },
-      { $set: { "address.$": req.body.newaddress } }
+    console.log(req.params.id, req.body.address);
+    let user = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $pull: { address: req.body.address },
+      }
     );
-  } catch (error) {}
+    res.json(user);
+  } catch (error) {
+    res.json(error);
+  }
 });
+
+//update info user
+
+router.patch("/update-info/:id", async (req, res) => {
+  try {
+    console.log(req.params.id, req.body);
+
+    let user = await User.findOne({ _id: req.params.id });
+    if (user) {
+      let update = await user.update({
+        fullName: req.body.fullName,
+        phoneNumber: req.body.phoneNumber,
+        dateOfBirth: req.body.dateOfBirth,
+      });
+      res.status(200).json({ message: "ok" });
+    }
+  } catch (error) {
+    res.json(error);
+  }
+});
+
 module.exports = router;

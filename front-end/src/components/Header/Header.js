@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import "../Header/header.css";
-import { Modal } from "antd";
+import { Button, Form, Input, Modal } from "antd";
 import axios from "../../config/axios";
 import { toast } from "react-toastify";
 
@@ -43,14 +43,25 @@ function Header() {
     email: "",
     address: "",
   });
-  const [newaccount, setNewAccount] = useState({
-    fullname: "",
-    email: "",
-    password: "",
-  });
+  // const [newaccount, setNewAccount] = useState({
+  //   fullname: "",
+  //   email: "",
+  //   password: "",
+  // });
   const [cart, setCart] = useState([]);
   const [role, setRole] = useState("");
-  const { fullname, email, password } = newaccount;
+  // const { fullname, email, password } = newaccount;
+
+  const validateMessages = {
+    required: "${label} bắt buộc!",
+    types: {
+      email: "${label} không phải là một email hợp lệ!",
+      number: "${label} is not a valid number!",
+    },
+    number: {
+      range: "${label} must be between ${min} and ${max}",
+    },
+  };
   window.onscroll = () => {
     setIsScrolled(window.pageYOffset === 0 ? false : true);
     return () => (window.onscroll = null);
@@ -71,16 +82,6 @@ function Header() {
   };
   const onChangePassword = (e) => {
     setAccount({ ...account, password: e.target.value });
-  };
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setNewAccount((prevState) => {
-      return {
-        ...prevState,
-        [name]: value,
-      };
-    });
   };
 
   const handleLogin = async () => {
@@ -132,30 +133,6 @@ function Header() {
       });
   };
 
-  const handleRegister = async () => {
-    await axios
-      .post("/user/create-account", newaccount)
-      .then((response) => {
-        if (response.data.errcode === 0) {
-          handleOpenLoginForm();
-          toast.success("Đăng kí thành công ", {
-            theme: "colored",
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.data.errcode === 1) {
-          toast.error("Vui lòng điền đầy đủ thông tin", {
-            theme: "colored",
-          });
-        } else if (err.response.data.errcode === 2) {
-          toast.warning("Email đã tồn tại", {
-            theme: "colored",
-          });
-        }
-      });
-  };
   useEffect(() => {
     setToken(getCookie("user"));
     checkLogin();
@@ -213,7 +190,34 @@ function Header() {
   useEffect(() => {
     setCart(myCart);
   }, [myCart]);
-
+  const onFinish = async (values) => {
+    console.log(values);
+    await axios
+      .post("/user/create-account", values)
+      .then((response) => {
+        if (response.data.errcode === 0) {
+          handleOpenLoginForm();
+          toast.success("Đăng kí thành công ", {
+            theme: "colored",
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.data.errcode === 1) {
+          toast.error("Vui lòng điền đầy đủ thông tin", {
+            theme: "colored",
+          });
+        } else if (err.response.data.errcode === 2) {
+          toast.warning("Email đã được sử dụng", {
+            theme: "colored",
+          });
+        }
+      });
+  };
+  const onFinishFailed = (errorInfo) => {
+    toast.error("Vui lòng kiểm tra lại thông tin");
+  };
   return (
     <div>
       <header className={isScrolled ? "header-scroll" : "header"}>
@@ -224,10 +228,7 @@ function Header() {
             alt=""
           />
         </NavLink>
-        <form className="search">
-          <input type="text" placeholder="Tìm kiếm sản phẩm" />
-          <button>Tìm kiếm</button>
-        </form>
+
         <ul className="account-menu">
           {!token ? (
             <li>
@@ -275,7 +276,7 @@ function Header() {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/cart">
+            <NavLink to="/cart" className="cart-item">
               <span className="icon">
                 <img
                   src="https://www.lotteria.vn/grs-static/images/icon-cart.svg"
@@ -335,57 +336,78 @@ function Header() {
             )}
 
             {isOpenRegisterForm === true ? (
-              <form className="form-login">
-                <p>Đăng ký</p>
-                <div className="inp-account">
-                  <label>Tên đầy đủ</label>
-                  <input
-                    type="text"
-                    required={true}
-                    placeholder="Nhập tên đầy đủ"
-                    onChange={handleChange}
-                    name="fullname"
-                    value={fullname}
-                  />
-                </div>
-                <div className="inp-account">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    required={true}
-                    placeholder="abc@gmail.com"
-                    onChange={handleChange}
+              <Form
+                layout="vertical"
+                name="form-name"
+                validateMessages={validateMessages}
+                onFinish={onFinish}
+                onFinishFailed={onFinishFailed}
+                autoComplete="off"
+              >
+                <div className="info-account">
+                  <h3>Đăng kí tài khoản</h3>
+                  <Form.Item
+                    className="info-user-show"
+                    name="fullName"
+                    label="Họ tên"
+                    rules={[
+                      {
+                        required: true,
+                        type: "text",
+                      },
+                    ]}
+                  >
+                    <Input name="fullname" placeholder="Nhập họ tên " />
+                  </Form.Item>
+                  <Form.Item
+                    className="info-user-show"
                     name="email"
-                    value={email}
-                  />
-                </div>
-                <div className="inp-account">
-                  <label>Password</label>
-                  <input
-                    type="password"
-                    required={true}
-                    placeholder="Nhập mật khẩu"
-                    onChange={handleChange}
-                    name="password"
-                    value={password}
-                  />
-                </div>
+                    label="Email"
+                    rules={[
+                      {
+                        required: true,
+                        type: "email",
+                      },
+                    ]}
+                  >
+                    <Input name="email" placeholder="Nhập email" />
+                  </Form.Item>
 
-                <div className="btn-login">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleRegister();
+                  <Form.Item
+                    name="password"
+                    label="Mật khẩu "
+                    rules={[
+                      {
+                        required: true,
+                        message: "Vui lòng nhập mật khẩu của bạn!",
+                      },
+                    ]}
+                  >
+                    <Input.Password
+                      name="password"
+                      placeholder="Nhập mật khẩu "
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    wrapperCol={{
+                      offset: 8,
+                      span: 16,
                     }}
                   >
-                    Đăng kí
-                  </button>
+                    <Button
+                      className="btn-login"
+                      type="primary"
+                      htmlType="Submit"
+                    >
+                      Đăng kí
+                    </Button>
+                  </Form.Item>
+                  <div className="register">
+                    Đã có tài khoản?
+                    <span onClick={handleOpenLoginForm}>Đăng nhập</span>
+                  </div>
                 </div>
-                <div className="register">
-                  Đã có tài khoản?
-                  <span onClick={handleOpenLoginForm}>Đăng nhập</span>
-                </div>
-              </form>
+              </Form>
             ) : (
               ""
             )}

@@ -44,20 +44,23 @@ function Combo() {
       });
     }
   };
-  function addToCart(id) {
-    axios
-      .patch(`/api/cart/add-product/${userinfo._id}`, {
-        productId: id,
-      })
-      .then((response) => {
-        console.log(response);
-        getCart();
-        toast.success("Đã thêm combo vào giỏ hàng");
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+  const addToCart = async (id) => {
+    try {
+      if (!userinfo._id) {
+        toast.warning("Vui lòng đăng nhập để mua hàng");
+      } else {
+        let resp = await axios.patch(`/api/cart/add-product/${userinfo._id}`, {
+          productId: id,
+        });
+        if (resp.status === 200) {
+          toast.success("Đã thêm combo vào giỏ hàng");
+          getCart();
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="combo-list">
       <div className="combo-header">

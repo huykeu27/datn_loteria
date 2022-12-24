@@ -5,6 +5,11 @@
     "icon": "https://www.lotteria.vn/grs-static/images/icon-myaccount-white.svg"
   },
   {
+    "display_name": "Mật khẩu",
+    "route": "/profile/password",
+    "icon": "https://www.lotteria.vn/grs-static/images/icon-myaccount-white.svg"
+  },
+  {
     "display_name": "Địa chỉ",
     "route": "/profile/address",
     "icon": "https://www.lotteria.vn/grs-static/images/icon-pos-white.svg"

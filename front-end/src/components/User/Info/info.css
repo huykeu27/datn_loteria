@@ -35,3 +35,14 @@
 .ant-form-item-label {
   width: 250px;
 }
+.btn-save-pass {
+  background-color: #ff5b6a;
+  border-radius: 4px;
+  border: none;
+}
+.btn-save-pass:hover {
+  background-color: #aaa;
+}
+.password-item-content {
+  margin-left: 400px;
+}

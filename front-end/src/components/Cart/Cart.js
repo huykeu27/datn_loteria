@@ -17,7 +17,7 @@ function Cart() {
   const [myCart, setCart] = useState([]);
   const getCart = async () => {
     let info = JSON.parse(localStorage.getItem("info"));
-    console.log(info);
+
     if (info) {
       const resp = await axios.get(`/api/cart/mycart/${info._id}`);
       setCart(resp.data.listProduct);
@@ -27,10 +27,10 @@ function Cart() {
       });
     }
   };
-  console.log(CartID);
+
   const clearCart = async (CartID) => {
     if (window.confirm("Bạn có muốn xóa hết sản phẩm") === true) {
-      let clearCart = await axios.delete(`/api/cart/clear/${CartID}`);
+      await axios.delete(`/api/cart/clear/${CartID}`);
       getCart();
     }
   };

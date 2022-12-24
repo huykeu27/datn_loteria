@@ -12,15 +12,16 @@ import Customers from "./components/Admin/customer/Customers";
 import CategoryManager from "./components/Admin/category/CategoryManager";
 import ProductManager from "./components/Admin/product/ProductManager";
 import ProfileUser from "./page/user/profile/ProfileUser";
-import Address from "./components/User/Address";
+import Address from "./components/User/Address/Address";
 import Order from "./components/User/Order/Order";
-import Info from "./components/User/Info";
+import Info from "./components/User/Info/Info";
 
 import CartHome from "./page/user/cart/CartHome";
 import Payment from "./page/user/pay/Payment";
 import OrderWait from "./components/User/Order/OrderWait";
 import OrderSuccess from "./components/User/Order/OrderSuccess";
 import OrderManager from "./components/Admin/order/OrderManager";
+import Password from "./components/User/Password/Password";
 function App() {
   return (
     <>
@@ -30,6 +31,7 @@ function App() {
         <Route path="/" element={<Home />}></Route>
         <Route path="/profile" element={<ProfileUser />}>
           <Route path="/profile" element={<Info />} />
+          <Route path="password" element={<Password />} />
           <Route path="address" element={<Address />} />
           <Route path="order" element={<Order />}>
             <Route path="waiting" element={<OrderWait />} />

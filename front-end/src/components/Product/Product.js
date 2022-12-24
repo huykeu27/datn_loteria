@@ -29,11 +29,17 @@ function Product() {
   };
   const addToCart = async (id) => {
     try {
-      let resp = await axios.patch(`/api/cart/add-product/${userinfo._id}`, {
-        productId: id,
-      });
-      toast.success("Đã thêm sản phẩm vào giỏ hàng");
-      getCart();
+      if (!userinfo._id) {
+        toast.warning("Vui lòng đăng nhập để mua hàng");
+      } else {
+        let resp = await axios.patch(`/api/cart/add-product/${userinfo._id}`, {
+          productId: id,
+        });
+        if (resp.status === 200) {
+          toast.success("Đã thêm sản phẩm vào giỏ hàng");
+          getCart();
+        }
+      }
     } catch (error) {
       console.log(error);
     }

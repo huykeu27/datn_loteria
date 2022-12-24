@@ -1,35 +1,36 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Modal, Table } from "antd";
+import { Input, Modal } from "antd";
 import { EditOutlined, DeleteOutlined, HomeOutlined } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import "./address.css";
-import axios from "../../config/axios";
+import axios from "../../../config/axios";
 import { toast } from "react-toastify";
 function Address() {
   const selector = useSelector((state) => state);
-  const address = selector.userinfo.address;
   const userinfo = selector.userinfo;
-  const idUser = userinfo._id;
   const [newaddress, setNewAddress] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [address, setAddress] = useState();
+  const user = JSON.parse(localStorage.getItem("info"));
   const showModalCreate = () => {
     setIsModalOpen(true);
   };
-  const showModalUpdate = () => {
-    setIsModalOpen(true);
-  };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-  console.log(idUser);
 
   const getAddress = async () => {
     try {
-      let resp = await axios.get(`/user/address/${idUser}`);
-    } catch (error) {}
+      let resp = await axios.get(`/user/address/${user._id}`);
+      console.log(resp.data.address);
+      setAddress(resp.data.address);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -42,30 +43,26 @@ function Address() {
         address: newaddress,
       });
       if (resp.status === 200) {
-        let response = await axios.get(`/user/me/${id}`);
-        localStorage.setItem("info", JSON.stringify(response.data.user));
+        setNewAddress("");
+        getAddress();
+        toast.success("Thêm địa chỉ thành công");
       }
-      setNewAddress("");
-      toast.success("Thêm địa chỉ thành công");
+
       handleOk();
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleEditAddress = async (id, address) => {
+  const handleRemoveAddress = async (address) => {
     try {
-      let resp = await axios.patch(`/user/edit-address/${id}`, {
+      let resp = await axios.patch(`/user/remove-address/${user._id}`, {
         address: address,
-        newaddress: newaddress,
       });
       if (resp.status === 200) {
-        let response = await axios.get(`/user/me/${id}`);
-        localStorage.setItem("info", JSON.stringify(response.data.user));
+        toast.success("Xóa địa chỉ thành công");
+        getAddress();
       }
-      setNewAddress("");
-      toast.success("Thêm địa chỉ thành công");
-      handleOk();
     } catch (error) {
       console.log(error);
     }
@@ -92,20 +89,18 @@ function Address() {
           </div>
           {address && address !== [] ? (
             <div className="add-content">
-              {userinfo?.address.map((item, index) => (
+              {address.map((item, index) => (
                 <div className="add-content-item" key={index}>
                   <div className="info-address">
                     <span>Địa chỉ số {index + 1}:</span>
                     <span>{item}</span>
                   </div>
                   <div className="add-action-item">
-                    <EditOutlined
+                    <DeleteOutlined
                       onClick={() => {
-                        showModalUpdate();
-                        handleEditAddress(idUser, item);
+                        handleRemoveAddress(item);
                       }}
                     />
-                    <DeleteOutlined />
                   </div>
                 </div>
               ))}
@@ -120,7 +115,7 @@ function Address() {
             title="Thêm địa chỉ"
             open={isModalOpen}
             onOk={() => {
-              handleNewAddress(idUser);
+              handleNewAddress(user._id);
             }}
             onCancel={handleCancel}
             okText="Thêm"

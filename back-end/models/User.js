@@ -7,7 +7,6 @@ const UserSchema = mongoose.Schema(
     password: String,
     fullName: String,
     phoneNumber: { type: Number, default: 0 },
-    dateOfBirth: { type: Date, default: 1 / 1 / 1990 },
     address: [{ type: String }],
     role: { type: String, default: "user" },
     token: { type: String, default: "" },
