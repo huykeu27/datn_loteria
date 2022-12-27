@@ -310,6 +310,9 @@ function ProductManager() {
             </Form.Item> */}
           </Form>
           <form action="/stats" method="post" className="form-create">
+            <div>
+              <span>Ảnh minh họa</span>
+            </div>
             <input
               type="file"
               className="form-control-file"
@@ -343,6 +346,9 @@ function ProductManager() {
         open={isModalOpen}
         onOk={handleUpdateProduct}
         onCancel={handleCancel}
+        width={850}
+        okText="Cập nhật"
+        cancelText="Hủy bỏ"
       >
         <Form
           labelCol={{

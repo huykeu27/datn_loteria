@@ -3,7 +3,7 @@
 }
 .create-new-category {
   margin-left: 50px;
-  width: 35%;
+  width: 50%;
 }
 .form__field {
   font-family: inherit;
@@ -99,4 +99,26 @@
 }
 .add-new-category span {
   margin-right: 5px;
+}
+.create-new-category > .form-create {
+  padding: 10px 30px;
+  display: flex;
+}
+.create-new-category > button {
+  background-color: #ff5b6a;
+  border: none;
+  border-radius: 4px;
+  margin-left: 200px;
+}
+.ant-form-item-row {
+}
+.form-create > div {
+  width: 174px;
+}
+.form-create > div > span {
+  float: left;
+  font-size: 18px;
+  font-weight: 500;
+  display: block;
+  padding-top: 10px;
 }

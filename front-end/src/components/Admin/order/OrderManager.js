@@ -111,19 +111,20 @@ function OrderManager() {
         console.log(err);
       });
   };
+  useEffect(() => {
+    getListOrder();
+  }, []);
   const acceptOrder = async (id) => {
     try {
       let resp = axios.patch(`/api/order/${id}`, { status: true });
       toast.success("Đơn hàng đã được xác nhận");
+      getListOrder();
       console.log(resp);
     } catch (error) {
       console.log(error);
     }
   };
 
-  useEffect(() => {
-    getListOrder();
-  }, []);
   return (
     <div className="orders">
       <Table

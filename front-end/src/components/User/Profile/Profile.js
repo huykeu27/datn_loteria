@@ -1,9 +1,10 @@
 import React from "react";
 import profile_item from "../../../assets/JSONdata/profile-user.json";
-import { useSelector } from "react-redux";
-import { NavLink, Outlet } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import "./profile.css";
+import { toast } from "react-toastify";
 
 const ProfileItem = (props) => {
   const active = props.active ? "active" : "";
@@ -17,23 +18,32 @@ const ProfileItem = (props) => {
     </div>
   );
 };
-function clearCookies() {
-  if (window.confirm("Bạn muốn đăng xuất") === true) {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i];
-      var eqPos = cookie.indexOf("=");
-      var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-      document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    }
 
-    localStorage.removeItem("info");
-  }
-}
 const Profile = (props) => {
   const selector = useSelector((state) => state);
+  const dispath = useDispatch();
   const userinfo = selector.userinfo;
+  const navigate = useNavigate();
+  function clearCookies() {
+    if (window.confirm("Bạn muốn đăng xuất") === true) {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie =
+          "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
 
+      localStorage.removeItem("info");
+      dispath({
+        type: "INFO-USER",
+        payload: null,
+      });
+      toast.success("Đăng xuất thành công");
+      navigate("/");
+    }
+  }
   return (
     <div className="profile_content">
       <div className="content-main">
@@ -53,7 +63,7 @@ const Profile = (props) => {
                 <ProfileItem title={item.display_name} icon={item.icon} />
               </NavLink>
             ))}
-            <NavLink to={"/"}>
+            <a>
               <div className="profile_item" onClick={clearCookies}>
                 <div className="profile_item-inner ">
                   <img
@@ -63,7 +73,7 @@ const Profile = (props) => {
                   <span>Đăng xuất</span>
                 </div>
               </div>
-            </NavLink>
+            </a>
           </div>
         </div>
         <div className="account-content-right">

@@ -1,7 +1,9 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./sidebar.css";
 import sidebar_items from "../../../assets/JSONdata/sidebar_routes.json";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 const SidebarItem = (props) => {
   const active = props.active ? "active" : "";
@@ -15,19 +17,29 @@ const SidebarItem = (props) => {
     </div>
   );
 };
-function clearCookies() {
-  window.confirm("Bạn muốn đăng xuất");
-  var cookies = document.cookie.split(";");
-  for (var i = 0; i < cookies.length; i++) {
-    var cookie = cookies[i];
-    var eqPos = cookie.indexOf("=");
-    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-    document.cookie = "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  }
 
-  localStorage.removeItem("info");
-}
 const Sidebar = (props) => {
+  const navigate = useNavigate();
+  const dispath = useDispatch();
+  function clearCookies() {
+    if (window.confirm("Bạn muốn đăng xuất") === true) {
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var eqPos = cookie.indexOf("=");
+        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie =
+          "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
+      localStorage.removeItem("info");
+      dispath({
+        type: "INFO-USER",
+        payload: null,
+      });
+      toast.success("Đăng xuất thành công");
+      navigate("/");
+    }
+  }
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
@@ -43,9 +55,9 @@ const Sidebar = (props) => {
           <SidebarItem title={item.display_name} />
         </NavLink>
       ))}
-      <NavLink to={"/"} onClick={clearCookies}>
+      <div onClick={clearCookies}>
         <SidebarItem title="Log out" />
-      </NavLink>
+      </div>
     </div>
   );
 };

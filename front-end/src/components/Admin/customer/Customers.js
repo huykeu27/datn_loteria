@@ -25,9 +25,8 @@ const Customers = () => {
       dataIndex: "address",
       render: (address) => (
         <div className="mng-address-item">
-          {address?.map((item) => {
-            console.log(item);
-            return <span>{item}</span>;
+          {address?.map((item, index) => {
+            return <span key={index}>{item}</span>;
           })}
         </div>
       ),

@@ -46,7 +46,7 @@ function Combo() {
   };
   const addToCart = async (id) => {
     try {
-      if (!userinfo._id) {
+      if (!userinfo) {
         toast.warning("Vui lòng đăng nhập để mua hàng");
       } else {
         let resp = await axios.patch(`/api/cart/add-product/${userinfo._id}`, {

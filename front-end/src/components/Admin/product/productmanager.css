@@ -2,7 +2,30 @@
   margin-left: 300px;
 }
 .form-create-product {
-  padding: 50px 0;
+  margin: 0 50px;
+}
+.form-create-product > .form-create {
+  padding: 10px 30px;
+  display: flex;
+}
+.form-create-product > button {
+  background-color: #ff5b6a;
+  border: none;
+  border-radius: 4px;
+  margin-left: 300px;
+}
+.form-create-product > .form-create > div {
+  width: 204px;
+}
+.form-create-product > .form-create > div > span {
+  float: left;
+  font-size: 18px;
+  font-weight: 500;
+  display: block;
+  padding-top: 10px;
+}
+.form-update {
+  padding-left: 30px;
 }
 .select-category {
   width: 100%;

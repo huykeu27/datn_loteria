@@ -50,7 +50,7 @@ function Cart() {
   };
 
   const removeItem = (productId) => {
-    if (window.confirm("Product remove from cart") === true) {
+    if (window.confirm("Xóa sản phẩm khỏi giỏ hàng") === true) {
       axios
         .patch(`/api/cart/${userinfo._id}`, { productId: productId })
         .then((response) => {

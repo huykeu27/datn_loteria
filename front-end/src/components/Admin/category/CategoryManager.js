@@ -243,6 +243,9 @@ function CategoryManager() {
             method="post"
             className="form-create"
           >
+            <div>
+              <span>Ảnh minh họa</span>
+            </div>
             <input
               type="file"
               className="form-control-file"
@@ -277,8 +280,9 @@ function CategoryManager() {
           open={isModalOpen}
           onOk={handleUpdateCategory}
           onCancel={handleCancel}
-          okText="Lưu thay đổi"
-          cancelText="Hủy"
+          width={850}
+          okText="Cập nhật"
+          cancelText="Hủy bỏ"
         >
           <Form
             labelCol={{

@@ -22,6 +22,7 @@ import OrderWait from "./components/User/Order/OrderWait";
 import OrderSuccess from "./components/User/Order/OrderSuccess";
 import OrderManager from "./components/Admin/order/OrderManager";
 import Password from "./components/User/Password/Password";
+import PrivateRouter from "./components/PrivateRouter/PrivateRouter";
 function App() {
   return (
     <>
@@ -29,7 +30,14 @@ function App() {
         <Route path="/category/:productId" element={<Product />}></Route>
         <Route path="/cart" element={<CartHome />}></Route>
         <Route path="/" element={<Home />}></Route>
-        <Route path="/profile" element={<ProfileUser />}>
+        <Route
+          path="/profile"
+          element={
+            <PrivateRouter sigin={"/login"}>
+              <ProfileUser />
+            </PrivateRouter>
+          }
+        >
           <Route path="/profile" element={<Info />} />
           <Route path="password" element={<Password />} />
           <Route path="address" element={<Address />} />
@@ -38,13 +46,29 @@ function App() {
             <Route path="success" element={<OrderSuccess />} />
           </Route>
         </Route>
-        <Route path="/checkout/cart" element={<Payment />}></Route>
-        <Route path="/admin" element={<Admin />}>
+        <Route
+          path="/checkout/cart"
+          element={
+            <PrivateRouter sigin={"/login"}>
+              <Payment />
+            </PrivateRouter>
+          }
+        ></Route>
+        <Route
+          path="/admin"
+          element={
+            <PrivateRouter sigin={"/login-admin"}>
+              <Admin />
+            </PrivateRouter>
+          }
+        >
           <Route path="customers" element={<Customers />} />
           <Route path="categories" element={<CategoryManager />} />
           <Route path="products" element={<ProductManager />} />
           <Route path="orders" element={<OrderManager />} />
         </Route>
+        <Route path="*" element={<Home />} />
+        <Route />
       </Routes>
     </>
   );

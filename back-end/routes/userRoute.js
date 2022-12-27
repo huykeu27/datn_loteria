@@ -95,7 +95,7 @@ router.patch("/change-pass", async (req, res) => {
 //get all user
 router.get("/get-all-user", async (req, res) => {
   try {
-    const listuser = await User.find();
+    const listuser = await User.find({ role: "user" });
     res.json(listuser);
   } catch (error) {
     res.json(error);
