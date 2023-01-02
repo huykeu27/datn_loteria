@@ -160,7 +160,7 @@ router.get("/address/:id", async (req, res) => {
   }
 });
 //add address
-router.patch("/address/:id", async (req, res) => {
+router.post("/address/:id", async (req, res) => {
   try {
     let user = await User.findOneAndUpdate(
       { _id: req.params.id },

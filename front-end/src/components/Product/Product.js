@@ -47,14 +47,14 @@ function Product() {
   };
 
   useEffect(() => {
-    axios(`/product/get-product-by-category/${productId}`)
+    axios(`/api/product/get-product-by-category/${productId}`)
       .then((data) => {
         setProducts(data.data.product);
       })
       .catch((error) => {
         console.log(error);
       });
-    axios(`/category/get-category-by-id/${productId}`)
+    axios(`/api/category/get-category-by-id/${productId}`)
       .then((data) => {
         setCategory(data.data.category.categoryName);
       })

@@ -25,7 +25,7 @@ function Address() {
 
   const getAddress = async () => {
     try {
-      let resp = await axios.get(`/user/address/${user._id}`);
+      let resp = await axios.get(`/api/user/address/${user._id}`);
       console.log(resp.data.address);
       setAddress(resp.data.address);
     } catch (error) {
@@ -39,7 +39,7 @@ function Address() {
 
   const handleNewAddress = async (id) => {
     try {
-      let resp = await axios.patch(`/user/address/${id}`, {
+      let resp = await axios.post(`/api/user/address/${id}`, {
         address: newaddress,
       });
       if (resp.status === 200) {
@@ -56,7 +56,7 @@ function Address() {
 
   const handleRemoveAddress = async (address) => {
     try {
-      let resp = await axios.patch(`/user/remove-address/${user._id}`, {
+      let resp = await axios.patch(`/api/user/remove-address/${user._id}`, {
         address: address,
       });
       if (resp.status === 200) {

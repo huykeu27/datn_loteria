@@ -35,7 +35,7 @@ function Payment() {
   };
   const getAddress = async () => {
     try {
-      let resp = await axios.get(`/user/address/${userId}`);
+      let resp = await axios.get(`/api/user/address/${userId}`);
       console.log(resp.data.address);
       setListAddress(resp.data.address);
       setAddress(resp.data.address[0]);

@@ -2,7 +2,6 @@ import React from "react";
 import profile_item from "../../../assets/JSONdata/profile-user.json";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-
 import "./profile.css";
 import { toast } from "react-toastify";
 

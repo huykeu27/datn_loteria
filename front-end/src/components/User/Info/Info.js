@@ -37,7 +37,7 @@ const Info = () => {
 
   const getInfo = async () => {
     try {
-      let resp = await axios.get(`/user/me/${user._id}`);
+      let resp = await axios.get(`/api/user/me/${user._id}`);
       setUserInfo(resp.data.user);
     } catch (error) {
       console.log(error);
@@ -50,7 +50,7 @@ const Info = () => {
   const onFinish = async (values) => {
     console.log(values);
     try {
-      let resp = await axios.patch(`/user/update-info/${user._id}`, {
+      let resp = await axios.patch(`/api/user/update-info/${user._id}`, {
         fullName: values.fullName,
 
         phoneNumber: values.phoneNumber,

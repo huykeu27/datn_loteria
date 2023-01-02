@@ -100,7 +100,7 @@ function ProductManager() {
   ];
 
   const getAllProduct = async () => {
-    const url = "/product/get-all-product";
+    const url = "/api/product/get-all-product";
     await axios
       .get(url)
       .then((response) => {
@@ -111,7 +111,7 @@ function ProductManager() {
       });
   };
   const getAllCategory = () => {
-    const url = "/category/get-all-category";
+    const url = "/api/category/get-all-category";
     axios
       .get(url)
       .then((res) => {
@@ -152,7 +152,7 @@ function ProductManager() {
     setIsModalOpen(false);
   };
   const handleCreateNewProduct = async () => {
-    const url = "/product/create-product";
+    const url = "/api/product/create-product";
     const form = document.querySelector(".form-create");
     const formData = new FormData(form);
     formData.append("name", state.productname);
@@ -193,7 +193,7 @@ function ProductManager() {
   };
 
   const handleDeleteProduct = async (id) => {
-    const url = `/product/delete-product/${id}`;
+    const url = `/api/product/delete-product/${id}`;
     await axios
       .delete(url)
       .then(function (response) {
@@ -206,14 +206,14 @@ function ProductManager() {
   };
 
   const handleUpdateProduct = async () => {
-    const url = `/product/update-product/${state.id}`;
+    const url = `/api/product/update-product/${state.id}`;
     const form = document.querySelector(".form-update");
     const formData = new FormData(form);
     formData.append("name", state.productname);
     formData.append("categoryId", state.categoryId);
     formData.append("price", state.price);
     await axios
-      .put(url, formData, {
+      .patch(url, formData, {
         headers: {
           "Content-Type": `multipart/form-data; boundary=${form._boundary}`,
         },

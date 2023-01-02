@@ -58,7 +58,7 @@ router.patch("/add-product/:id", async (req, res) => {
 
 ///xóa sản phẩm khỏi giỏ hàng
 
-router.patch("/:id", async (req, res) => {
+router.patch("/remove-product/:id", async (req, res) => {
   try {
     const data = await Cart.findOneAndUpdate(
       { userId: req.params.id },

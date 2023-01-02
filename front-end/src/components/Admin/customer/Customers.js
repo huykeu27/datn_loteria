@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../config/axios";
-import { Space, Table, Tag } from "antd";
+import { Table } from "antd";
 import "./customer.css";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 const Customers = () => {
@@ -54,7 +54,7 @@ const Customers = () => {
     },
   ];
   const getAllUser = async () => {
-    const url = "/user/get-all-user";
+    const url = "/api/user/get-all-user";
     await axios
       .get(url)
       .then((response) => {
@@ -69,7 +69,7 @@ const Customers = () => {
   }, []);
 
   const handleRemoveUser = async (id) => {
-    const url = `/user/remove-user/${id}`;
+    const url = `/api/user/remove-user/${id}`;
     await axios
       .delete(url)
       .then(function (response) {
@@ -81,7 +81,7 @@ const Customers = () => {
         console.log(err);
       });
   };
-  console.log(listuser);
+
   return (
     <div className="customer">
       <Table

@@ -21,7 +21,7 @@ function Combo() {
     autoplay: true,
   };
   const getCombo = async () => {
-    const url = "/product/combo";
+    const url = "/api/product/combo";
     await axios
       .get(url)
       .then((res) => {

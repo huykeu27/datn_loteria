@@ -52,7 +52,9 @@ function Cart() {
   const removeItem = (productId) => {
     if (window.confirm("Xóa sản phẩm khỏi giỏ hàng") === true) {
       axios
-        .patch(`/api/cart/${userinfo._id}`, { productId: productId })
+        .patch(`/api/cart/remove-product/${userinfo._id}`, {
+          productId: productId,
+        })
         .then((response) => {
           console.log(response);
           dispath({

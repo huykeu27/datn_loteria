@@ -26,9 +26,9 @@ app.use(cookieParser());
 app.use(cors());
 // app.use('/users', usersRouter);
 app.use("/", indexRouter);
-app.use("/user", userRouter);
-app.use("/product", productRouter);
-app.use("/category", categoryRouter);
+app.use("/api/user", userRouter);
+app.use("/api/product", productRouter);
+app.use("/api/category", categoryRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRoute);
 

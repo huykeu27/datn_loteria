@@ -85,7 +85,7 @@ function Header() {
   };
 
   const handleLogin = async () => {
-    const url = "/user/sign-in";
+    const url = "/api/user/sign-in";
     await axios
       .post(url, {
         email: account.email,
@@ -193,7 +193,7 @@ function Header() {
   const onFinish = async (values) => {
     console.log(values);
     await axios
-      .post("/user/create-account", values)
+      .post("/api/user/create-account", values)
       .then((response) => {
         if (response.data.errcode === 0) {
           handleOpenLoginForm();

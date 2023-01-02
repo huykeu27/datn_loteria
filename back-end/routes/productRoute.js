@@ -117,7 +117,7 @@ router.delete("/delete-product/:id", async (req, res) => {
 });
 
 //update product
-router.put(
+router.patch(
   "/update-product/:id",
   upload.single("productThump"),
   async (req, res) => {

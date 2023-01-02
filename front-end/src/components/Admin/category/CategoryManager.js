@@ -101,17 +101,9 @@ function CategoryManager() {
       },
     },
   ];
-  const getBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = (error) => reject(error);
-    });
-  };
 
   const getAllCategory = async () => {
-    const url = "/category/get-all-category";
+    const url = "/api/category/get-all-category";
     await axios
       .get(url)
       .then((res) => {
@@ -140,7 +132,7 @@ function CategoryManager() {
   };
 
   const handleCreateNewCategory = () => {
-    let url = "/category/create-category";
+    let url = "/api/category/create-category";
     const form = document.querySelector(".form-create");
     const formData = new FormData(form);
     formData.append("categoryName", state.categoryName);
@@ -168,7 +160,7 @@ function CategoryManager() {
     setShowForm(!showform);
   };
   const handleDeleteCategory = async (id) => {
-    const url = `/category/delete-category/${id}`;
+    const url = `/api/category/delete-category/${id}`;
     await axios
       .delete(url)
       .then(function (response) {
@@ -187,13 +179,13 @@ function CategoryManager() {
   };
 
   const handleUpdateCategory = async () => {
-    const url = `/category/update-category/${state.id}`;
+    const url = `/api/category/update-category/${state.id}`;
     const form = document.querySelector(".form-update");
     const formData = new FormData(form);
     formData.append("categoryName", state.categoryName);
     formData.append("enable", state.enable);
     await axios
-      .put(url, formData)
+      .patch(url, formData)
       .then((response) => {
         toast.success("Update thành công");
         getAllCategory();

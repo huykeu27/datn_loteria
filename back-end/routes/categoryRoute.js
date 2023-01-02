@@ -70,7 +70,7 @@ router.get("/get-category-by-id/:id", async (req, res) => {
 });
 
 //update
-router.put(
+router.patch(
   "/update-category/:id",
   upload.single("categorythump"),
   async (req, res) => {

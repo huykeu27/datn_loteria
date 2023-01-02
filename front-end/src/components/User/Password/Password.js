@@ -1,23 +1,13 @@
 import React from "react";
 import { Button, Form, Input } from "antd";
 import axios from "../../../config/axios";
-import { useState } from "react";
 import { toast } from "react-toastify";
 function Password() {
   let email = JSON.parse(localStorage.getItem("info")).email;
-  const [oldpass, setOldPass] = useState("");
-
-  const handleChangePass = async () => {
-    const resp = await axios.patch("/user/change-pass", {
-      email: email,
-      oldpass: oldpass,
-    });
-    console.log(resp);
-  };
 
   const onFinish = async (values) => {
     try {
-      const resp = await axios.patch("/user/change-pass", {
+      const resp = await axios.patch("/api/user/change-pass", {
         email: email,
         passwordold: values.passwordold,
         passwordnew: values.passwordnew,
@@ -60,12 +50,7 @@ function Password() {
                 },
               ]}
             >
-              <Input.Password
-                placeholder="Nhập mật khẩu cũ"
-                onChange={(e) => {
-                  setOldPass(e.target.value);
-                }}
-              />
+              <Input.Password placeholder="Nhập mật khẩu cũ" />
             </Form.Item>
             <Form.Item
               name="passwordnew"

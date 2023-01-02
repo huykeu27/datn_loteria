@@ -6,7 +6,7 @@ import axios from "../../config/axios";
 function Category() {
   const [categorys, setListCategory] = useState([]);
   const getAllCategory = async () => {
-    const url = "/category/get-all-category";
+    const url = "/api/category/get-all-category";
     await axios
       .get(url)
       .then((res) => {
