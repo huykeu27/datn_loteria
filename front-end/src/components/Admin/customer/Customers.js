@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "../../../config/axios";
-import { Table } from "antd";
+import { Table, Modal } from "antd";
 import "./customer.css";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { toast } from "react-toastify";
 
 const Customers = () => {
+  const { confirm } = Modal;
   const [listuser, setListUser] = useState();
   const columns = [
     {
@@ -39,9 +40,7 @@ const Customers = () => {
           <>
             <DeleteOutlined
               onClick={() => {
-                if (window.confirm("Bạn chắc chắn muốn khóa không???")) {
-                  handleRemoveUser(record._id);
-                }
+                handleRemoveUser(record._id);
               }}
               style={{
                 color: "red",
@@ -69,17 +68,29 @@ const Customers = () => {
   }, []);
 
   const handleRemoveUser = async (id) => {
-    const url = `/api/user/remove-user/${id}`;
-    await axios
-      .delete(url)
-      .then(function (response) {
-        toast.success("Xóa danh mục thành công");
-        getAllUser();
-        console.log(response);
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    confirm({
+      title: "Xóa người dùng khỏi hệ thống?",
+      icon: <ExclamationCircleFilled />,
+      // content: "Some descriptions",
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk() {
+        const url = `/api/user/remove-user/${id}`;
+        axios
+          .delete(url)
+          .then(function (response) {
+            toast.success("Xóa người dùng thành công");
+            getAllUser();
+            console.log(response);
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
   };
 
   return (

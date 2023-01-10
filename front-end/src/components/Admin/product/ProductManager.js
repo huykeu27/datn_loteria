@@ -3,8 +3,13 @@ import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "./productmanager.css";
-import { Table, Modal, Form, Input, Select, Button, Upload } from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { Table, Modal, Form, Input, Select, Button } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  ExclamationCircleFilled,
+} from "@ant-design/icons";
 
 function ProductManager() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,7 +23,7 @@ function ProductManager() {
     price: "",
   });
 
-  console.log(state);
+  const { confirm } = Modal;
   const columns = [
     {
       title: "Mã sản phẩm",
@@ -84,9 +89,7 @@ function ProductManager() {
             />
             <DeleteOutlined
               onClick={() => {
-                if (window.confirm("Bạn chắc chắn muốn xóa không???")) {
-                  handleDeleteProduct(record._id);
-                }
+                handleDeleteProduct(record._id);
               }}
               style={{
                 color: "red",
@@ -193,16 +196,28 @@ function ProductManager() {
   };
 
   const handleDeleteProduct = async (id) => {
-    const url = `/api/product/delete-product/${id}`;
-    await axios
-      .delete(url)
-      .then(function (response) {
-        toast.success("Xóa danh mục thành công");
-        getAllProduct();
-      })
-      .catch(function (err) {
-        console.log(err);
-      });
+    confirm({
+      title: "Xóa sản phẩm khỏi hệ thống?",
+      icon: <ExclamationCircleFilled />,
+      // content: "Some descriptions",
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk() {
+        const url = `/api/product/delete-product/${id}`;
+        axios
+          .delete(url)
+          .then(function (response) {
+            toast.success("Xóa danh mục thành công");
+            getAllProduct();
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
   };
 
   const handleUpdateProduct = async () => {

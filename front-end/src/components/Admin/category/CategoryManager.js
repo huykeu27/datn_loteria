@@ -3,20 +3,16 @@ import axios from "../../../config/axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "./categorymanager.css";
+import { Table, Modal, Tag, Switch, Form, Input, Button } from "antd";
 import {
-  Table,
-  Modal,
-  Tag,
-  Switch,
-  Form,
-  Input,
-  Button,
-  Upload,
-  uploadButton,
-} from "antd";
-import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+  EditOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  ExclamationCircleFilled,
+} from "@ant-design/icons";
 
 function CategoryManager() {
+  const { confirm } = Modal;
   const [showform, setShowForm] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [listcategory, setListCategory] = useState([]);
@@ -87,9 +83,7 @@ function CategoryManager() {
             />
             <DeleteOutlined
               onClick={() => {
-                if (window.confirm("Bạn chắc chắn muốn xóa không???")) {
-                  handleDeleteCategory(record._id);
-                }
+                handleDeleteCategory(record._id);
               }}
               style={{
                 color: "red",
@@ -160,22 +154,33 @@ function CategoryManager() {
     setShowForm(!showform);
   };
   const handleDeleteCategory = async (id) => {
-    const url = `/api/category/delete-category/${id}`;
-    await axios
-      .delete(url)
-      .then(function (response) {
-        toast.success("Xóa danh mục thành công");
-        getAllCategory();
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.data.errcode === 1) {
-          toast.warning("Điền đầy đủ thông tin");
-        } else if (err.response.data.errcode === 2) {
-          toast.error("Danh mục đã tồn tại");
-        }
-      });
+    confirm({
+      title: "Xóa danh mục sản phẩm khỏi hệ thống?",
+      icon: <ExclamationCircleFilled />,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk() {
+        const url = `/api/category/delete-category/${id}`;
+        axios
+          .delete(url)
+          .then(function (response) {
+            toast.success("Xóa danh mục thành công");
+            getAllCategory();
+            console.log(response);
+          })
+          .catch((err) => {
+            console.log(err);
+            if (err.response.data.errcode === 1) {
+              toast.warning("Điền đầy đủ thông tin");
+            } else if (err.response.data.errcode === 2) {
+              toast.error("Danh mục đã tồn tại");
+            }
+          });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
   };
 
   const handleUpdateCategory = async () => {

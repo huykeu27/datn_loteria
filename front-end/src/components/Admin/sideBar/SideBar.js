@@ -4,7 +4,8 @@ import "./sidebar.css";
 import sidebar_items from "../../../assets/JSONdata/sidebar_routes.json";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-
+import { Modal } from "antd";
+import { ExclamationCircleFilled } from "@ant-design/icons";
 const SidebarItem = (props) => {
   const active = props.active ? "active" : "";
 
@@ -19,26 +20,36 @@ const SidebarItem = (props) => {
 };
 
 const Sidebar = (props) => {
+  const { confirm } = Modal;
   const navigate = useNavigate();
   const dispath = useDispatch();
   function clearCookies() {
-    if (window.confirm("Bạn muốn đăng xuất") === true) {
-      var cookies = document.cookie.split(";");
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i];
-        var eqPos = cookie.indexOf("=");
-        var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-        document.cookie =
-          "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      }
-      localStorage.removeItem("info");
-      dispath({
-        type: "INFO-USER",
-        payload: null,
-      });
-      toast.success("Đăng xuất thành công");
-      navigate("/");
-    }
+    confirm({
+      title: "Bạn muốn đăng xuất???",
+      icon: <ExclamationCircleFilled />,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk() {
+        var cookies = document.cookie.split(";");
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i];
+          var eqPos = cookie.indexOf("=");
+          var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+          document.cookie =
+            "user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
+        localStorage.removeItem("info");
+        dispath({
+          type: "INFO-USER",
+          payload: null,
+        });
+        toast.success("Đăng xuất thành công");
+        navigate("/");
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
   }
   return (
     <div className="sidebar">

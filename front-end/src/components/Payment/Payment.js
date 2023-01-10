@@ -3,7 +3,7 @@ import "./payment.css";
 import axios from "../../config/axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { EditOutlined } from "@ant-design/icons";
+import { EditOutlined, ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal } from "antd";
 import { toast } from "react-toastify";
 function Payment() {
@@ -11,12 +11,11 @@ function Payment() {
   const selector = useSelector((state) => state);
   const CartID = selector.CartID;
   const userId = JSON.parse(localStorage.getItem("info"))._id;
-
-  // const addressLocal = JSON.parse(localStorage.getItem("info")).address;
   const [listaddress, setListAddress] = useState();
   const [address, setAddress] = useState("");
   const [myCart, setCart] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { confirm } = Modal;
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -58,20 +57,31 @@ function Payment() {
     if (!address) {
       toast.warning("Thiếu thông tin địa chỉ");
     } else {
-      if (window.confirm("Xác nhận mua hàng") === true) {
-        const resp = await axios.post(`/api/order/neworder`, {
-          userId: userId,
-          listProducts: myCart,
-          total: sum,
-          address: address,
-        });
-
-        if (resp.status === 200) {
-          let clearCart = await axios.delete(`/api/cart/clear/${CartID}`);
-          toast.success("Vui lòng chờ xác nhận đơn hàng");
-          navigate("/profile/order/waiting");
-        }
-      }
+      confirm({
+        title: "Xác nhận đặt hàng !",
+        icon: <ExclamationCircleFilled />,
+        okText: "Xác nhận",
+        cancelText: "Hủy",
+        onOk() {
+          axios
+            .post(`/api/order/neworder`, {
+              userId: userId,
+              listProducts: myCart,
+              total: sum,
+              address: address,
+            })
+            .then((resp) => {
+              if (resp.status === 200) {
+                axios.delete(`/api/cart/clear/${CartID}`);
+                toast.success("Vui lòng chờ xác nhận đơn hàng");
+                navigate("/profile/order/waiting");
+              }
+            });
+        },
+        onCancel() {
+          console.log("Cancel");
+        },
+      });
     }
   };
   return (

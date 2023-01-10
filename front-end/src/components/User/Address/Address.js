@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Input, Modal } from "antd";
-import { EditOutlined, DeleteOutlined, HomeOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  HomeOutlined,
+  ExclamationCircleFilled,
+} from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import "./address.css";
 import axios from "../../../config/axios";
@@ -12,6 +17,7 @@ function Address() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [address, setAddress] = useState();
   const user = JSON.parse(localStorage.getItem("info"));
+  const { confirm } = Modal;
   const showModalCreate = () => {
     setIsModalOpen(true);
   };
@@ -56,13 +62,28 @@ function Address() {
 
   const handleRemoveAddress = async (address) => {
     try {
-      let resp = await axios.patch(`/api/user/remove-address/${user._id}`, {
-        address: address,
+      confirm({
+        title: "Xác nhận xóa địa chỉ ?",
+        icon: <ExclamationCircleFilled />,
+        okText: "Xác nhận",
+        cancelText: "Hủy",
+        onOk() {
+          axios
+            .patch(`/api/user/remove-address/${user._id}`, {
+              address: address,
+            })
+            .then((resp) => {
+              if (resp.status === 200) {
+                toast.success("Xóa địa chỉ thành công");
+                getAddress();
+              }
+            })
+            .catch((err) => console.log(err));
+        },
+        onCancel() {
+          console.log("Cancel");
+        },
       });
-      if (resp.status === 200) {
-        toast.success("Xóa địa chỉ thành công");
-        getAddress();
-      }
     } catch (error) {
       console.log(error);
     }

@@ -6,15 +6,68 @@ import {
   CaretDownOutlined,
   CaretUpOutlined,
   CloseOutlined,
+  ExclamationCircleFilled,
 } from "@ant-design/icons";
-import { Empty } from "antd";
+import { Empty, Modal } from "antd";
 import { NavLink } from "react-router-dom";
+
 function Cart() {
   const selector = useSelector((state) => state);
   const dispath = useDispatch();
   const CartID = selector.CartID;
   const userinfo = selector.userinfo;
   const [myCart, setCart] = useState([]);
+  const { confirm } = Modal;
+  const removeItem = (productId) => {
+    confirm({
+      title: "Xóa sản phẩm khỏi giỏ hàng???",
+      icon: <ExclamationCircleFilled />,
+      // content: "Some descriptions",
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk() {
+        axios
+          .patch(`/api/cart/remove-product/${userinfo._id}`, {
+            productId: productId,
+          })
+          .then((response) => {
+            console.log(response);
+            dispath({
+              type: "MY-CART",
+              payload: response.data.listProduct,
+            });
+            getCart();
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  };
+  const clearCart = (CartID) => {
+    confirm({
+      title: "Xóa toàn bộ sản phẩm khỏi giỏ hàng???",
+      icon: <ExclamationCircleFilled />,
+      okText: "Xác nhận",
+      cancelText: "Hủy",
+      onOk() {
+        axios
+          .delete(`/api/cart/clear/${CartID}`)
+          .then(() => {
+            getCart();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  };
   const getCart = async () => {
     let info = JSON.parse(localStorage.getItem("info"));
 
@@ -25,13 +78,6 @@ function Cart() {
         type: "MY-CART",
         payload: resp.data.listProduct,
       });
-    }
-  };
-
-  const clearCart = async (CartID) => {
-    if (window.confirm("Bạn có muốn xóa hết sản phẩm") === true) {
-      await axios.delete(`/api/cart/clear/${CartID}`);
-      getCart();
     }
   };
   const increase = async (id) => {
@@ -48,27 +94,6 @@ function Cart() {
     console.log(resp);
     getCart();
   };
-
-  const removeItem = (productId) => {
-    if (window.confirm("Xóa sản phẩm khỏi giỏ hàng") === true) {
-      axios
-        .patch(`/api/cart/remove-product/${userinfo._id}`, {
-          productId: productId,
-        })
-        .then((response) => {
-          console.log(response);
-          dispath({
-            type: "MY-CART",
-            payload: response.data.listProduct,
-          });
-          getCart();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  };
-
   useEffect(() => {
     getCart();
   }, []);
