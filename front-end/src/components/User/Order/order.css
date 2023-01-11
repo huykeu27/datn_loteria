@@ -41,3 +41,6 @@ thead[class*="ant-table-thead"] th {
   font-size: 14px;
   text-align: center;
 }
+a.active > div > h1 {
+  color: #ff5b6a;
+}

@@ -14,15 +14,4 @@ const OrderSchema = mongoose.Schema(
 );
 const Order = mongoose.model("order", OrderSchema);
 
-// Order.create({
-//   cartId: "638e3440373b45e037d03e54",
-//   total: 1,
-//   address: "abc",
-// })
-//   .then((data) => {
-//     console.log(data);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
 module.exports = Order;

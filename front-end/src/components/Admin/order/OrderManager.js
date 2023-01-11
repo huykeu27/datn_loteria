@@ -117,8 +117,9 @@ function OrderManager() {
   const acceptOrder = async (id) => {
     try {
       let resp = axios.patch(`/api/order/${id}`, { status: true });
-      toast.success("Đơn hàng đã được xác nhận");
       getListOrder();
+      toast.success("Đơn hàng đã được xác nhận");
+
       console.log(resp);
     } catch (error) {
       console.log(error);

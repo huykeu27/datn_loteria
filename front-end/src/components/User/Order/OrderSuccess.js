@@ -8,12 +8,12 @@ import "./order.css";
 
 function OrderSuccess() {
   const columns = [
+    // {
+    //   title: "Mã đơn hàng",
+    //   dataIndex: "_id",
+    // },
     {
-      title: "Mã đơn hàng",
-      dataIndex: "_id",
-    },
-    {
-      title: "Giỏ hàng",
+      title: "Đơn hàng",
       children: [
         {
           title: "Tên sản phẩm",
@@ -69,6 +69,7 @@ function OrderSuccess() {
       dataIndex: "address",
     },
   ];
+
   const selector = useSelector((state) => state);
   const userId = JSON.parse(localStorage.getItem("info"))._id;
   const [listOrder, setListOrder] = useState([]);

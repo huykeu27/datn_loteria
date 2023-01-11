@@ -48,6 +48,7 @@ router.post(
         let newproduct = await Product.create({
           name: req.body.name,
           categoryId: req.body.categoryId,
+
           price: req.body.price,
           imageUrl: `${process.env.SERVER_NAME}/public/imagesProduct/${req.file.filename}`,
         });

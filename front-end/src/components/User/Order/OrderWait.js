@@ -8,10 +8,10 @@ import "./order.css";
 
 function OrderWait() {
   const columns = [
-    {
-      title: "Mã đơn hàng",
-      dataIndex: "_id",
-    },
+    // {
+    //   title: "Mã đơn hàng",
+    //   dataIndex: "_id",
+    // },
     {
       title: "Giỏ hàng",
       children: [
@@ -85,7 +85,7 @@ function OrderWait() {
     let resp = await axios.get(`/api/order/waiting/${userId}`);
     setListOrder(resp.data);
   };
-  console.log(listOrder);
+
   useEffect(() => {
     getOrder();
   }, []);
